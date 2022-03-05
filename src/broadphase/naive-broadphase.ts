@@ -13,7 +13,8 @@ export class NaiveBroadphase implements BroadphaseInterface {
   public extract(bodies: Body[]): BodyPair[] {
     const pairs: BodyPair[] = [];
     for (let i = 0; i < bodies.length; i++) {
-      for (let j = i + 1; j < bodies.length; j++) {
+      for (let j = 0; j < bodies.length; j++) {
+        if (i === j) continue;
         pairs.push({
           bodyA: bodies[i],
           bodyB: bodies[j]

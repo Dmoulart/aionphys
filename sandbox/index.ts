@@ -15,13 +15,18 @@ const square = new Body({
     pos: new Vector(200, 150),
     vel: new Vector(10, 0)
 });
+
 const square2 = new Body({
     shape: new Box(100, 100),
     pos: new Vector(800, 200),
     vel: new Vector(-30, 0)
 });
 
-const bodies = [square, square2];
+
+document.body.onmousemove = (e) => {
+    square.pos = new Vector(e.clientX, e.clientY);
+}
+const bodies = [square, square2, ...createBodies(10)];
 
 // Create world
 const world = new World({ bodies });
@@ -39,8 +44,17 @@ const world = new World({ bodies });
 
 //----------------------------UTILS-----------------------------------------------
 
-function resolve(collision: { overlap: number; normal: Vector }, shape: Shape) {
-    shape.pos = shape.pos.add(collision.normal.scale(collision.overlap + 1));
+function createBodies(n = 1) {
+    const bodies = [];
+    for (let i = 0; i < n; i++) {
+        const body = new Body({
+            shape: new Box(Math.random() * 100, Math.random() * 100),
+            pos: new Vector(Math.random() * 500, Math.random() * 500),
+            vel: new Vector(Math.random() * 50 * Math.random() > 0.5 ? -1 : 1, Math.random() * 50 * Math.random() > 0.5 ? -1 : 1)
+        })
+        bodies.push(body);
+    }
+    return bodies
 }
 
 function draw(body: Body) {
