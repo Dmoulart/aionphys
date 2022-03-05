@@ -1,5 +1,6 @@
-export { Body, BodyOptions } from "./body";
+export { Body, BodyOptions } from './body';
 
-export { World, WorldOptions } from "./world";
+export { World, WorldOptions } from './world';
 
-export * from "./broadphase";
+export * from './broadphase';
+export * from './solver';

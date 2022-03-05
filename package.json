@@ -6,7 +6,7 @@
   "author": "aion",
   "license": "MIT",
   "dependencies": {
-    "aionsat": "^1.0.4"
+    "aionsat": "^1.0.5"
   },
   "scripts": {
     "format": "prettier --write \"**/*.{ts,js}\"",

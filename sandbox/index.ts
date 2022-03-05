@@ -1,4 +1,3 @@
-
 import { Box, Circle, Polygon, Sat, Shape, vec, Vector } from 'aionsat';
 import { Body, World } from '../dist';
 
@@ -11,30 +10,32 @@ const ctx = canvas.getContext('2d');
 ctx.strokeStyle = 'white';
 
 // Create bodies
-const body = new Body({
+const circle = new Body({
     shape: new Circle(100),
     pos: new Vector(200, 200),
     vel: new Vector(10, 0)
 });
-const bodies = [body];
+const circle2 = new Body({
+    shape: new Circle(100),
+    pos: new Vector(800, 200),
+    vel: new Vector(-10, 0)
+});
+
+const bodies = [circle, circle2];
 
 // Create world
 const world = new World({ bodies });
-
 
 // Launch loop
 (function loop() {
     ctx.clearRect(0, 0, innerWidth, innerHeight);
 
-    world.step()
+    world.step();
 
-    draw(body)
+    bodies.forEach(draw);
 
     requestAnimationFrame(loop);
 })();
-
-
-
 
 //----------------------------UTILS-----------------------------------------------
 
@@ -72,4 +73,3 @@ function drawCircle(circle: Circle, color = 'white') {
     ctx.stroke();
     ctx.closePath();
 }
-
