@@ -670,10 +670,10 @@ acorn@^8.4.1, acorn@^8.5.0:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.7.0.tgz#90951fde0f8f09df93549481e5fc141445b791cf"
   integrity sha512-V/LGr1APy+PXIwKebEWrkZPwoeoF+w1jiOBUmuxuiUIaOHtob8Qc9BTrYo7VuI5fR8tqsy+buA2WFooR5olqvQ==
 
-aionsat@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/aionsat/-/aionsat-1.0.2.tgz#00d5ae6e2b8bfd9418ef48d51e7c0c3ff36f36d3"
-  integrity sha512-wjExKSj7fUmmzBIrBKJLdCcs3/MnPR8YVeIjurW6pg2spJN1EmCzGYnWZHfZowu0+bRLIxK50BiAb9smVRpatw==
+aionsat@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/aionsat/-/aionsat-1.0.4.tgz#248dc15b13db7dd9d07806c936c356fc8599a121"
+  integrity sha512-BZCeHrMd6c7EWbSa3uw/fA+cfri3143h9amS3rg3V36rJTKvKNc9dlagJsqXM1S92BIPtJQYZ8TolUXMjjTWSg==
 
 ansi-colors@4.1.1:
   version "4.1.1"
