@@ -6,6 +6,13 @@ import { CollisionData, CollisionSolverInterface } from './collision-solver';
  * on the collision's informations.
  */
 export class ArcadeCollisionSolver implements CollisionSolverInterface {
+
+    /**
+     * The debounce factor is used to move the bodies apart slightly more than the overlap.
+     * It will prevents them from overlapping immediately again.
+     */
+    static readonly DEBOUNCE_FACTOR = 1
+
     /**
      *
      * @inheritdoc
@@ -22,7 +29,7 @@ export class ArcadeCollisionSolver implements CollisionSolverInterface {
      */
     private solvePosition({ a, b, normal, overlap }: CollisionData): void {
         // Get the minimum translation vector
-        const mtv = normal.scale(overlap / 2)
+        const mtv = normal.scale((overlap / 2) + ArcadeCollisionSolver.DEBOUNCE_FACTOR)
         // Use the minimum translation vector to get the bodies out of contact
         a.pos = a.pos.add(mtv);
         b.pos = b.pos.sub(mtv);
@@ -37,12 +44,10 @@ export class ArcadeCollisionSolver implements CollisionSolverInterface {
         {
             const velAdjust = normal.scale(normal.dot(bodyA.vel.negate()));
             bodyA.vel = bodyA.vel.add(velAdjust);
-            console.log(normal, velAdjust)
         }
         {
             const velAdjust = normal.scale(normal.dot(bodyB.vel.negate()));
             bodyB.vel = bodyB.vel.add(velAdjust);
-            console.log(normal, velAdjust)
         }
     }
 }

@@ -10,18 +10,18 @@ const ctx = canvas.getContext('2d');
 ctx.strokeStyle = 'white';
 
 // Create bodies
-const circle = new Body({
-    shape: new Circle(100),
-    pos: new Vector(200, 200),
+const square = new Body({
+    shape: new Box(100, 100),
+    pos: new Vector(200, 150),
     vel: new Vector(10, 0)
 });
-const circle2 = new Body({
-    shape: new Circle(100),
+const square2 = new Body({
+    shape: new Box(100, 100),
     pos: new Vector(800, 200),
-    vel: new Vector(-10, 0)
+    vel: new Vector(-30, 0)
 });
 
-const bodies = [circle, circle2];
+const bodies = [square, square2];
 
 // Create world
 const world = new World({ bodies });
