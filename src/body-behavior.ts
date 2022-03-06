@@ -3,13 +3,13 @@
  *
  */
 export enum BodyBehaviors {
-    /**
-     * - Dynamic bodies are affected by gravity and can move.
-     */
-    Dynamic,
+  /**
+   * - Dynamic bodies are affected by gravity and can move.
+   */
+  Dynamic,
 
-    /**
-     * - Static bodies are not affected by gravity and cannot move.
-     */
-    Static
+  /**
+   * - Static bodies are not affected by gravity and cannot move.
+   */
+  Static
 }

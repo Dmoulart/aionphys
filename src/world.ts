@@ -277,6 +277,4 @@ export class World extends EventEmitter {
   public set gravity(gravity: Vector) {
     this._gravity = gravity;
   }
-
-
 }

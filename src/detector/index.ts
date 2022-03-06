@@ -1,1 +1,2 @@
-export { CollisionDetectorInterface } from './collision-detector';
+export * from './collision-detector';
+export * from './sat-detector';

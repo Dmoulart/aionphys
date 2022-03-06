@@ -1,7 +1,6 @@
-export { Body, BodyOptions } from './body';
-
-export { World, WorldOptions } from './world';
-
+export * from './body';
+export * from './world';
 export * from './broadphase';
 export * from './solver';
-export * from './time'
+export * from './time';
+export * from './detector';
