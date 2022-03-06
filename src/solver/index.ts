@@ -1,2 +1,2 @@
-export * from './collision-solver';
-export * from './arcade-collision-solver';
+export * from './solver';
+export * from './arcade-solver';

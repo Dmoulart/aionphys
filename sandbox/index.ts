@@ -57,6 +57,10 @@ const bodies = [square, square2, ...createBodies(10)];
 const world = new World({ bodies });
 world.wire(eventDispatcher);
 
+eventDispatcher.on(CollisionEvents.PostSolve, ({ bodyA, bodyB, normal }: CollisionData) => {
+    // bodyB.vel = bodyB.vel.add(normal.scale(1))
+});
+
 // Launch loop
 (function loop() {
     ctx.clearRect(0, 0, innerWidth, innerHeight);

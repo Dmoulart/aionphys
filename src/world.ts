@@ -3,7 +3,7 @@ import { NaiveBroadphase } from './broadphase';
 import { BroadphaseInterface } from './broadphase/broadphase-interface';
 import { CollisionDetectorInterface } from './detector';
 import { SatDetector } from './detector/sat-detector';
-import { ArcadeCollisionSolver, CollisionData, CollisionEvents, CollisionSolverInterface, SolverEvents } from './solver';
+import { ArcadeSolver, CollisionData, CollisionEvents, CollisionSolverInterface, SolverEvents } from './solver';
 import { EventEmitter, Fire, On } from 'aion-events';
 import { emit } from 'process';
 
@@ -45,13 +45,19 @@ export class World extends EventEmitter {
    */
   private _solver!: CollisionSolverInterface;
 
+  /**
+   * The deceleration constant. It is applied at every step to every bodies.
+   * 
+   */
+  private readonly _DECELERATION = 0.97;
+
   public constructor(options: WorldOptions) {
     super();
     const { bodies, broadphase, detector, solver } = options;
     this.bodies = bodies;
     this.broadphase = broadphase ?? new NaiveBroadphase();
     this.detector = detector ?? new SatDetector();
-    this.solver = solver ?? new ArcadeCollisionSolver();
+    this.solver = solver ?? new ArcadeSolver();
   }
 
   /**
@@ -60,7 +66,7 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   public step(): void {
-    this.moveBodies();
+    this.translateBodies();
 
     const pairs = this.broadphase.extract(this.bodies);
 
@@ -82,10 +88,10 @@ export class World extends EventEmitter {
    *
    * @returns nothing
    */
-  private moveBodies(): void {
+  private translateBodies(): void {
     const len = this.bodies.length;
     for (let i = 0; i < len; i++) {
-      this.moveBody(this.bodies[i]);
+      this.translate(this.bodies[i]);
     }
   }
 
@@ -95,7 +101,8 @@ export class World extends EventEmitter {
    * @param body
    * @returns nothing
    */
-  private moveBody(body: Body): void {
+  private translate(body: Body): void {
+    body.vel = body.vel.scale(this._DECELERATION)
     body.pos = body.pos.add(body.vel);
   }
 
