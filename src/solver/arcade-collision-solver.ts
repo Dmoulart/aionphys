@@ -1,11 +1,11 @@
 import { Collision, Vector } from 'aionsat';
-import { CollisionData, CollisionSolverInterface } from './collision-solver';
-
+import { CollisionData, CollisionEvents, CollisionSolverInterface, SolverEvents } from './collision-solver';
+import { EventEmitter } from 'aion-events';
 /**
  * The arcade collision resolver is a simple collision resolver that adjusts the bodies position and velocity depending
  * on the collision's informations.
  */
-export class ArcadeCollisionSolver implements CollisionSolverInterface {
+export class ArcadeCollisionSolver extends EventEmitter implements CollisionSolverInterface {
   /**
    * The debounce factor is used to move the bodies apart slightly more than the overlap.
    * It will prevents them from overlapping immediately again.
@@ -17,8 +17,10 @@ export class ArcadeCollisionSolver implements CollisionSolverInterface {
    * @inheritdoc
    */
   public solve(collision: CollisionData): void {
+    this.fire(SolverEvents.PreSolve, collision);
     this.solvePosition(collision);
     this.solveVelocity(collision);
+    this.fire(SolverEvents.PostSolve, collision);
   }
 
   /**

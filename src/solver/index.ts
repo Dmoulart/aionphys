@@ -1,2 +1,2 @@
-export { CollisionSolverInterface, CollisionData } from './collision-solver';
-export { ArcadeCollisionSolver } from './arcade-collision-solver';
+export * from './collision-solver';
+export * from './arcade-collision-solver';

@@ -3,7 +3,9 @@ import { NaiveBroadphase } from './broadphase';
 import { BroadphaseInterface } from './broadphase/broadphase-interface';
 import { CollisionDetectorInterface } from './detector';
 import { SatDetector } from './detector/sat-detector';
-import { ArcadeCollisionSolver, CollisionSolverInterface } from './solver';
+import { ArcadeCollisionSolver, CollisionData, CollisionEvents, CollisionSolverInterface, SolverEvents } from './solver';
+import { EventEmitter, Fire, On } from 'aion-events';
+import { emit } from 'process';
 
 export type WorldOptions = {
   bodies: Body[];
@@ -17,7 +19,7 @@ export type WorldOptions = {
  * It also orchestrate the collision detection and resolution.
  *
  */
-export class World {
+export class World extends EventEmitter {
   /**
    * The world's bodies.
    *
@@ -44,6 +46,7 @@ export class World {
   private _solver!: CollisionSolverInterface;
 
   public constructor(options: WorldOptions) {
+    super();
     const { bodies, broadphase, detector, solver } = options;
     this.bodies = bodies;
     this.broadphase = broadphase ?? new NaiveBroadphase();
@@ -94,6 +97,34 @@ export class World {
    */
   private moveBody(body: Body): void {
     body.pos = body.pos.add(body.vel);
+  }
+
+  /**
+   * This event listener acts as a bridge between the solver and other event emitters which could be
+   * wired to the world to get the collision events.
+   *
+   * @emits {collision:presolve}
+   * @param collision
+   * @return collision data
+   */
+  @On(SolverEvents.PreSolve)
+  @Fire(CollisionEvents.PreSolve)
+  public onCollisionPresolve(collision: CollisionData): CollisionData {
+    return collision;
+  }
+
+  /**
+   * This event listener acts as a bridge between the solver and other event emitters which could be
+   * wired to the world to get the collision events.
+   *
+   * @emits {collision:postsolve}
+   * @param collision
+   * @return collision data
+   */
+  @On(SolverEvents.PostSolve)
+  @Fire(CollisionEvents.PostSolve)
+  public onCollisionPostsolve(collision: CollisionData): CollisionData {
+    return collision;
   }
 
   /**
@@ -166,5 +197,7 @@ export class World {
    */
   public set solver(solver: CollisionSolverInterface) {
     this._solver = solver;
+    // Wire the solver events to the world's events
+    solver.wire(this);
   }
 }
