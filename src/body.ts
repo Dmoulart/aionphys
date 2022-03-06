@@ -1,15 +1,29 @@
 import { Circle, Shape, Vector } from 'aionsat';
+import { BodyBehaviors } from './body-behavior';
 
+/**
+ * The body initialization object type.
+ * 
+ */
 export type BodyOptions = {
   shape?: Shape;
   pos?: Vector;
   vel?: Vector;
+  behavior?: BodyBehaviors;
 };
+
 /**
  * The body class represents a material object in the simulation.
  *
  */
 export class Body {
+
+  /**
+   * All the possible bodies behaviors.
+   * 
+   */
+  public static Behaviors = BodyBehaviors;
+
   /**
    * The geometry of the body.
    *
@@ -22,11 +36,18 @@ export class Body {
    */
   private _vel!: Vector;
 
+  /**
+   * The body behavior.
+   * 
+   */
+  private _behavior!: BodyBehaviors;
+
   constructor(options: BodyOptions) {
-    const { shape, pos, vel } = options;
+    const { shape, pos, vel, behavior } = options;
     this.shape = shape ?? new Circle(10);
     this.pos = pos ?? new Vector(0, 0);
     this.vel = vel ?? new Vector(0, 0);
+    this.behavior = behavior ?? BodyBehaviors.Dynamic;
   }
 
   /**
@@ -78,5 +99,38 @@ export class Body {
    */
   set shape(shape: Shape) {
     this._shape = shape;
+  }
+
+  /**
+   * The body behavior.
+   * 
+   * @returns body behavior
+   */
+  get behavior(): BodyBehaviors {
+    return this._behavior;
+  }
+
+  /**
+   * Set the body behavior.
+   * 
+   */
+  set behavior(behavior: BodyBehaviors) {
+    this._behavior = behavior;
+  }
+
+  /**
+   * Returns true if a body is dynamic.
+   * 
+   */
+  get isDynamic(): boolean {
+    return this.behavior === BodyBehaviors.Dynamic;
+  }
+
+  /**
+   * Returns true if a body is static.
+   * 
+   */
+  get isStatic(): boolean {
+    return this.behavior === BodyBehaviors.Static;
   }
 }

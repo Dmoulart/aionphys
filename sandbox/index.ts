@@ -23,6 +23,12 @@ const square2 = new Body({
     vel: new Vector(-30, 0)
 });
 
+const floor = new Body({
+    shape: new Box(innerWidth, 10),
+    pos: new Vector(0, window.innerHeight - 50),
+    behavior: Body.Behaviors.Static
+});
+
 const eventDispatcher = new EventEmitter();
 
 eventDispatcher.on('collision:presolve', (collision: CollisionData) => {
@@ -51,10 +57,10 @@ document.body.onkeydown = e => {
 
     }
 }
-const bodies = [square, square2, ...createBodies(10)];
+const bodies = [square, square2, floor, ...createBodies(10)];
 
 // Create world
-const world = new World({ bodies });
+const world = new World({ bodies, gravity: new Vector(0, 0.1) });
 world.wire(eventDispatcher);
 
 eventDispatcher.on(CollisionEvents.PostSolve, ({ bodyA, bodyB, normal }: CollisionData) => {

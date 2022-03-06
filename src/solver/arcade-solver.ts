@@ -9,7 +9,7 @@ export class ArcadeSolver extends EventEmitter implements SolverInterface {
    * The debounce factor is used to move the bodies apart slightly more than the overlap.
    * It will prevents them from overlapping immediately again.
    */
-  static readonly DEBOUNCE_FACTOR = 1;
+  static readonly DEBOUNCE_FACTOR = 0.01;
 
   /**
    *
@@ -27,12 +27,26 @@ export class ArcadeSolver extends EventEmitter implements SolverInterface {
    *
    * @param collision
    */
-  private solvePosition({ a, b, normal, overlap }: CollisionData): void {
-    // Get the minimum translation vector
-    const mtv = normal.scale(overlap / 2 + ArcadeSolver.DEBOUNCE_FACTOR);
+  private solvePosition({ a, b, normal, overlap, bodyA, bodyB }: CollisionData): void {
+
+    // The minimum translation vector.
+    let mtv;
+
+    if (bodyA.isDynamic && bodyB.isDynamic) {
+      mtv = normal.scale(overlap / 2 + ArcadeSolver.DEBOUNCE_FACTOR);
+    }
+    else {
+      // If one body is static we need to move the other body totally out of the collision.
+      mtv = normal.scale(overlap + ArcadeSolver.DEBOUNCE_FACTOR);
+    }
+
     // Use the minimum translation vector to get the bodies out of contact
-    a.pos = a.pos.add(mtv);
-    b.pos = b.pos.sub(mtv);
+    if (bodyA.isDynamic) {
+      a.pos = a.pos.add(mtv);
+    }
+    if (bodyB.isDynamic) {
+      b.pos = b.pos.sub(mtv);
+    }
   }
 
   /**
@@ -41,11 +55,12 @@ export class ArcadeSolver extends EventEmitter implements SolverInterface {
    * @param collision
    */
   private solveVelocity({ normal, bodyA, bodyB }: CollisionData): void {
-    {
+    if (bodyA.isDynamic) {
       const velAdjust = normal.scale(normal.dot(bodyA.vel.negate()));
       bodyA.vel = bodyA.vel.add(velAdjust);
     }
-    {
+
+    if (bodyB.isDynamic) {
       const velAdjust = normal.scale(normal.dot(bodyB.vel.negate()));
       bodyB.vel = bodyB.vel.add(velAdjust);
     }

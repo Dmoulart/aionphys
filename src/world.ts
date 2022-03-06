@@ -6,12 +6,16 @@ import { SatDetector } from './detector/sat-detector';
 import { ArcadeSolver, CollisionData, CollisionEvents, CollisionSolverInterface, SolverEvents } from './solver';
 import { EventEmitter, Fire, On } from 'aion-events';
 import { emit } from 'process';
+import { Vector } from 'aionsat';
+import { BodyBehaviors } from './body-behavior';
 
 export type WorldOptions = {
   bodies: Body[];
   broadphase?: BroadphaseInterface;
   detector?: CollisionDetectorInterface;
   solver?: CollisionSolverInterface;
+  gravity?: Vector;
+  deceleration?: number;
 };
 
 /**
@@ -46,18 +50,26 @@ export class World extends EventEmitter {
   private _solver!: CollisionSolverInterface;
 
   /**
+   * The gravity force applied to all bodies in the world.
+   * 
+   */
+  private _gravity: Vector = Vector.origin;
+
+  /**
    * The deceleration constant. It is applied at every step to every bodies.
    * 
    */
-  private readonly _DECELERATION = 0.97;
+  private readonly _DECELERATION: number = 0.97;
 
   public constructor(options: WorldOptions) {
     super();
-    const { bodies, broadphase, detector, solver } = options;
+    const { bodies, broadphase, detector, solver, gravity, deceleration } = options;
     this.bodies = bodies;
     this.broadphase = broadphase ?? new NaiveBroadphase();
     this.detector = detector ?? new SatDetector();
     this.solver = solver ?? new ArcadeSolver();
+    this.gravity = gravity ?? this.gravity;
+    this._DECELERATION = deceleration ?? this._DECELERATION;
   }
 
   /**
@@ -66,6 +78,8 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   public step(): void {
+
+    // Update the positions of the bodies in the world.
     this.translateBodies();
 
     const pairs = this.broadphase.extract(this.bodies);
@@ -81,6 +95,7 @@ export class World extends EventEmitter {
 
       this.solver.solve({ ...collision, bodyA, bodyB });
     }
+
   }
 
   /**
@@ -90,9 +105,30 @@ export class World extends EventEmitter {
    */
   private translateBodies(): void {
     const len = this.bodies.length;
+
     for (let i = 0; i < len; i++) {
+      // Static bodies don't move.
+      if (this.bodies[i].isStatic) continue;
+
+      // Make the body decelerate.
+      this.decelerate(this.bodies[i]);
+
+      // Update positions of the bodies relative to their velocity.
       this.translate(this.bodies[i]);
+
+      // Update bodie's velocities.
+      this.applyGravity(this.bodies[i]);
     }
+  }
+
+  /**
+   * Decrease the bodie's velocity using the deceleration coefficient.
+   * 
+   * @param body 
+   * @returns nothing
+   */
+  private decelerate(body: Body): void {
+    body.vel = body.vel.scale(this._DECELERATION)
   }
 
   /**
@@ -102,8 +138,17 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   private translate(body: Body): void {
-    body.vel = body.vel.scale(this._DECELERATION)
     body.pos = body.pos.add(body.vel);
+  }
+
+  /**
+   * Apply the gravity force to the body.
+   * 
+   * @param body 
+   * @returns nothing
+   */
+  private applyGravity(body: Body): void {
+    body.vel = body.vel.add(this._gravity);
   }
 
   /**
@@ -207,4 +252,23 @@ export class World extends EventEmitter {
     // Wire the solver events to the world's events
     solver.wire(this);
   }
+
+  /**
+   * The world's gravity force.
+   * 
+   * @returns world's gravity force
+   */
+  public get gravity(): Vector {
+    return this._gravity;
+  }
+
+  /**
+   * Set the world's gravity force.
+   * 
+   * @param gravity the gravity force
+   */
+  public set gravity(gravity: Vector) {
+    this._gravity = gravity;
+  }
+
 }
