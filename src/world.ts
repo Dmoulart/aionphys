@@ -79,13 +79,9 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   public step(): void {
-
     // Caclculate the delta time.
     Time.dt = Time.now - Time.lastFrameTime;
 
-    // Save the last frame time
-    Time.lastFrameTime = Time.now;
-    console.log('dt', Time.dt);
     // Update the positions of the bodies in the world.
     this.translateBodies();
 
@@ -104,6 +100,9 @@ export class World extends EventEmitter {
         this.solver.solve({ ...collision, bodyA, bodyB });
       }
     }
+
+    // // Save the last frame time
+    Time.lastFrameTime = Time.now;
   }
 
   /**
@@ -136,7 +135,7 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   private decelerate(body: Body): void {
-    body.vel = body.vel.scale(this._DECELERATION)// .scale(Time.dt);
+    body.vel = body.vel.scale(this._DECELERATION);
   }
 
   /**
@@ -146,7 +145,7 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   private translate(body: Body): void {
-    body.pos = body.pos.add(body.vel)// .scale(Time.dt);
+    body.pos = body.pos.add(body.vel.scale(Time.scaleFactor));
   }
 
   /**
@@ -156,7 +155,7 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   private applyGravity(body: Body): void {
-    body.vel = body.vel.add(this._gravity)// .scale(Time.dt);
+    body.vel = body.vel.add(this._gravity.scale(Time.scaleFactor));
   }
 
   /**

@@ -12,10 +12,16 @@ export class Time {
     private static _lastFrameTime: number | null = null;
 
     /**
-   * The world's step delta time.
-   * 
-   * @returns world's step delta time
-   */
+     * The frames per seconds we target.
+     * 
+     */
+    public static readonly FPS = 60;
+
+    /**
+     * The world's step delta time.
+     * 
+     * @returns world's step delta time
+     */
     public static get dt(): number {
         return this._dt / 1000;
     }
@@ -54,6 +60,17 @@ export class Time {
      */
     public static get now() {
         return performance.now();
+    }
+
+    /**
+     * WARNING : I don't know what I am doing here.
+     * I use it to scale the movements of the bodies but I ignore if this is the right way to do it.
+     * 
+     * @warning
+     * @returns god knows what
+     */
+    public static get scaleFactor() {
+        return Time.dt * Time.FPS;
     }
 
 }
