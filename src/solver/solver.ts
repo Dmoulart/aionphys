@@ -8,17 +8,17 @@ import { BodyPair } from '../broadphase/body-pair';
  */
 export enum CollisionEvents {
   PreSolve = 'collision:presolve',
-  PostSolve = 'collision:presolve',
+  PostSolve = 'collision:presolve'
 }
 
 /**
  * The solver events are fired when the solver is solving the collisions.
  * They are private events which should be listened by the world which then redispatch them to the bodies.
- * 
+ *
  */
 export enum SolverEvents {
   PreSolve = 'solver:presolve',
-  PostSolve = 'solver:presolve',
+  PostSolve = 'solver:presolve'
 }
 
 /**

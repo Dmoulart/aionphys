@@ -12,5 +12,5 @@ export interface BroadphaseInterface {
    * @param bodies
    * @returns pairs of bodies
    */
-  extract(bodies: Body[]): BodyPair[];
+  pair(bodies: Body[]): BodyPair[];
 }

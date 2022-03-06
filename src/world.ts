@@ -51,13 +51,13 @@ export class World extends EventEmitter {
 
   /**
    * The gravity force applied to all bodies in the world.
-   * 
+   *
    */
   private _gravity: Vector = Vector.origin;
 
   /**
    * The deceleration constant. It is applied at every step to every bodies.
-   * 
+   *
    */
   private readonly _DECELERATION: number = 0.97;
 
@@ -78,24 +78,24 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   public step(): void {
-
     // Update the positions of the bodies in the world.
     this.translateBodies();
 
-    const pairs = this.broadphase.extract(this.bodies);
+    // Detect pair of bodies which are potentially colliding.
+    const pairs = this.broadphase.pair(this.bodies);
 
-    const len = pairs.length;
-
-    for (let i = 0; i < len; i++) {
+    for (let i = 0; i < pairs.length; i++) {
+      // Extract pair
       const { bodyA, bodyB } = pairs[i];
 
+      // Detect collision
       const collision = this.detector.intersects(bodyA, bodyB);
 
-      if (!collision) continue;
-
-      this.solver.solve({ ...collision, bodyA, bodyB });
+      // Resolve collision
+      if (collision) {
+        this.solver.solve({ ...collision, bodyA, bodyB });
+      }
     }
-
   }
 
   /**
@@ -123,12 +123,12 @@ export class World extends EventEmitter {
 
   /**
    * Decrease the bodie's velocity using the deceleration coefficient.
-   * 
-   * @param body 
+   *
+   * @param body
    * @returns nothing
    */
   private decelerate(body: Body): void {
-    body.vel = body.vel.scale(this._DECELERATION)
+    body.vel = body.vel.scale(this._DECELERATION);
   }
 
   /**
@@ -143,8 +143,8 @@ export class World extends EventEmitter {
 
   /**
    * Apply the gravity force to the body.
-   * 
-   * @param body 
+   *
+   * @param body
    * @returns nothing
    */
   private applyGravity(body: Body): void {
@@ -255,7 +255,7 @@ export class World extends EventEmitter {
 
   /**
    * The world's gravity force.
-   * 
+   *
    * @returns world's gravity force
    */
   public get gravity(): Vector {
@@ -264,11 +264,10 @@ export class World extends EventEmitter {
 
   /**
    * Set the world's gravity force.
-   * 
+   *
    * @param gravity the gravity force
    */
   public set gravity(gravity: Vector) {
     this._gravity = gravity;
   }
-
 }

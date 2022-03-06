@@ -28,14 +28,12 @@ export class ArcadeSolver extends EventEmitter implements SolverInterface {
    * @param collision
    */
   private solvePosition({ a, b, normal, overlap, bodyA, bodyB }: CollisionData): void {
-
     // The minimum translation vector.
     let mtv;
 
     if (bodyA.isDynamic && bodyB.isDynamic) {
       mtv = normal.scale(overlap / 2 + ArcadeSolver.DEBOUNCE_FACTOR);
-    }
-    else {
+    } else {
       // If one body is static we need to move the other body totally out of the collision.
       mtv = normal.scale(overlap + ArcadeSolver.DEBOUNCE_FACTOR);
     }

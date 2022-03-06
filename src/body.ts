@@ -3,7 +3,7 @@ import { BodyBehaviors } from './body-behavior';
 
 /**
  * The body initialization object type.
- * 
+ *
  */
 export type BodyOptions = {
   shape?: Shape;
@@ -17,10 +17,9 @@ export type BodyOptions = {
  *
  */
 export class Body {
-
   /**
    * All the possible bodies behaviors.
-   * 
+   *
    */
   public static Behaviors = BodyBehaviors;
 
@@ -38,7 +37,7 @@ export class Body {
 
   /**
    * The body behavior.
-   * 
+   *
    */
   private _behavior!: BodyBehaviors;
 
@@ -103,7 +102,7 @@ export class Body {
 
   /**
    * The body behavior.
-   * 
+   *
    * @returns body behavior
    */
   get behavior(): BodyBehaviors {
@@ -112,7 +111,7 @@ export class Body {
 
   /**
    * Set the body behavior.
-   * 
+   *
    */
   set behavior(behavior: BodyBehaviors) {
     this._behavior = behavior;
@@ -120,7 +119,7 @@ export class Body {
 
   /**
    * Returns true if a body is dynamic.
-   * 
+   *
    */
   get isDynamic(): boolean {
     return this.behavior === BodyBehaviors.Dynamic;
@@ -128,7 +127,7 @@ export class Body {
 
   /**
    * Returns true if a body is static.
-   * 
+   *
    */
   get isStatic(): boolean {
     return this.behavior === BodyBehaviors.Static;
