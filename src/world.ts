@@ -8,6 +8,7 @@ import { EventEmitter, Fire, On } from 'aion-events';
 import { emit } from 'process';
 import { Vector } from 'aionsat';
 import { BodyBehaviors } from './body-behavior';
+import { Time } from './time';
 
 export type WorldOptions = {
   bodies: Body[];
@@ -78,6 +79,13 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   public step(): void {
+
+    // Caclculate the delta time.
+    Time.dt = Time.now - Time.lastFrameTime;
+
+    // Save the last frame time
+    Time.lastFrameTime = Time.now;
+    console.log('dt', Time.dt);
     // Update the positions of the bodies in the world.
     this.translateBodies();
 
@@ -128,7 +136,7 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   private decelerate(body: Body): void {
-    body.vel = body.vel.scale(this._DECELERATION);
+    body.vel = body.vel.scale(this._DECELERATION)// .scale(Time.dt);
   }
 
   /**
@@ -138,7 +146,7 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   private translate(body: Body): void {
-    body.pos = body.pos.add(body.vel);
+    body.pos = body.pos.add(body.vel)// .scale(Time.dt);
   }
 
   /**
@@ -148,7 +156,7 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   private applyGravity(body: Body): void {
-    body.vel = body.vel.add(this._gravity);
+    body.vel = body.vel.add(this._gravity)// .scale(Time.dt);
   }
 
   /**
@@ -270,4 +278,6 @@ export class World extends EventEmitter {
   public set gravity(gravity: Vector) {
     this._gravity = gravity;
   }
+
+
 }
