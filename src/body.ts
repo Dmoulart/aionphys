@@ -36,9 +36,16 @@ export class Body {
   private _vel!: Vector;
 
   /**
+   * The body's step velocity is used to conserve the body's velocity during a simulation step.
+   * It allow us to mutate the body's velocity during the step without losing the original starting value.
+   * This original starting value is used to calculate the translations values which we divide with the world's 
+   * setted iteration number.
+   * 
+   * It must only be set in the world at the beginning of a world simulation step.
    * 
    */
-  public stepVel: Vector = Vector.origin;
+  private _stepVel!: Vector;
+
   /**
    * The body behavior.
    *
@@ -65,9 +72,10 @@ export class Body {
   /**
    * Set the body position.
    *
+   * @param pos the body position
    */
-  set pos(vector: Vector) {
-    this.shape.pos = vector;
+  set pos(pos: Vector) {
+    this.shape.pos = pos;
   }
 
   /**
@@ -82,9 +90,29 @@ export class Body {
   /**
    * Set the body's velocity.
    *
+   * @param vel the body velocity
    */
   set vel(vel: Vector) {
     this._vel = vel;
+  }
+
+  /**
+   * Set the body's step velocity.
+   * 
+   * @returns body step velocity
+   */
+  public get stepVel(): Vector {
+    return this._stepVel;
+  }
+
+  /**
+   * Get the body's step velocity.
+   * It must only be set in the world at the beginning of a world simulation step.
+   * 
+   * @param stepVel the body step velocity
+   */
+  public set stepVel(stepVel: Vector) {
+    this._stepVel = stepVel;
   }
 
   /**
@@ -98,7 +126,8 @@ export class Body {
 
   /**
    * Set the body geometrical entity.
-   *
+   * 
+   * @param shape the body shape
    */
   set shape(shape: Shape) {
     this._shape = shape;
@@ -116,22 +145,25 @@ export class Body {
   /**
    * Set the body behavior.
    *
+   * @param behavior the body behavior
    */
   set behavior(behavior: BodyBehaviors) {
     this._behavior = behavior;
   }
 
   /**
-   * Returns true if a body is dynamic.
+   * Returns true if a body's behavior is dynamic.
    *
+   * @returns body is dynamic
    */
   get isDynamic(): boolean {
     return this.behavior === BodyBehaviors.Dynamic;
   }
 
   /**
-   * Returns true if a body is static.
+   * Returns true if a body's behavior is static.
    *
+   * @returns body is static
    */
   get isStatic(): boolean {
     return this.behavior === BodyBehaviors.Static;

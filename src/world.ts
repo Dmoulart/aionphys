@@ -91,12 +91,11 @@ export class World extends EventEmitter {
   public step(): void {
     // Caclculate the delta time.
     Time.dt = Time.now - Time.lastFrameTime;
-    console.log(Time.dt)
-    // Initialize the iteration counter.
-    let counter = 0;
 
-    while (counter < this._ITERATIONS) {
-      console.log(counter)
+    // Initialize the iteration counter.
+    let currentIteration = 1;
+
+    while (currentIteration <= this._ITERATIONS) {
       // Update the positions of the bodies in the world.
       this.translateBodies();
 
@@ -115,7 +114,7 @@ export class World extends EventEmitter {
           this.solver.solve({ ...collision, bodyA, bodyB });
         }
       }
-      counter++
+      currentIteration++
     }
 
     // // Save the last frame time
@@ -134,6 +133,7 @@ export class World extends EventEmitter {
       // Static bodies don't move.
       if (this.bodies[i].isStatic) continue;
 
+      // Register the original starting velocity of the body.
       this.bodies[i].stepVel = this.bodies[i].vel
 
       // Make the body decelerate.
@@ -154,7 +154,9 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   private decelerate(body: Body): void {
-    body.vel = body.stepVel.scale(this._DECELERATION).div(new Vector(this._ITERATIONS, this._ITERATIONS));
+    body.vel = body.stepVel
+      .scale(this._DECELERATION)
+      .div(new Vector(this._ITERATIONS, this._ITERATIONS));
   }
 
   /**
@@ -164,12 +166,10 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   private translate(body: Body): void {
-    const move = body.stepVel.scale(Time.scaleFactor).div(new Vector(this._ITERATIONS, this._ITERATIONS));
-    body.pos = body.pos.add(new Vector(
-      move.x,
-      move.y
-    ));
-    //body.pos = body.pos.add(move);
+    const move = body.stepVel
+      .scale(Time.scaleFactor)
+      .div(new Vector(this._ITERATIONS, this._ITERATIONS));
+    body.pos = body.pos.add(move);
   }
 
   /**
@@ -179,11 +179,7 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   private applyGravity(body: Body): void {
-    const force = this._gravity//.scale(Time.scaleFactor);
-    body.vel = body.stepVel.add(new Vector(
-      force.x,// ,
-      force.y,//
-    ));
+    body.vel = body.stepVel.add(this._gravity);
   }
 
   /**
