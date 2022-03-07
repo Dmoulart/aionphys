@@ -66,6 +66,13 @@ export class Body {
   }
 
   /**
+   * 
+   */
+  aabb() {
+    
+  }
+
+  /**
    * The body position in the simulation.
    *
    * @return shape position

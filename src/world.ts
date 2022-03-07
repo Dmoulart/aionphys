@@ -146,6 +146,8 @@ export class World extends EventEmitter {
           this.solver.solve({ ...collision, bodyA, bodyB });
         }
       }
+
+      // Update the iteration counter.
       currentIteration++
     }
 
