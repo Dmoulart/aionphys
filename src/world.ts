@@ -134,6 +134,8 @@ export class World extends EventEmitter {
       // Static bodies don't move.
       if (this.bodies[i].isStatic) continue;
 
+      this.bodies[i].stepVel = this.bodies[i].vel
+
       // Make the body decelerate.
       this.decelerate(this.bodies[i]);
 
@@ -152,7 +154,7 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   private decelerate(body: Body): void {
-    body.vel = body.vel.scale(this._DECELERATION);
+    body.vel = body.stepVel.scale(this._DECELERATION).div(new Vector(this._ITERATIONS, this._ITERATIONS));
   }
 
   /**
@@ -162,7 +164,7 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   private translate(body: Body): void {
-    const move = body.vel.scale(Time.scaleFactor);
+    const move = body.stepVel.scale(Time.scaleFactor).div(new Vector(this._ITERATIONS, this._ITERATIONS));
     body.pos = body.pos.add(new Vector(
       move.x,
       move.y
@@ -178,7 +180,7 @@ export class World extends EventEmitter {
    */
   private applyGravity(body: Body): void {
     const force = this._gravity//.scale(Time.scaleFactor);
-    body.vel = body.vel.add(new Vector(
+    body.vel = body.stepVel.add(new Vector(
       force.x,// ,
       force.y,//
     ));

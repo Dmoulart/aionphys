@@ -36,6 +36,10 @@ export class Body {
   private _vel!: Vector;
 
   /**
+   * 
+   */
+  public stepVel: Vector = Vector.origin;
+  /**
    * The body behavior.
    *
    */

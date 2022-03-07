@@ -54,13 +54,13 @@ export class ArcadeSolver extends EventEmitter implements SolverInterface {
    */
   private solveVelocity({ normal, bodyA, bodyB }: CollisionData): void {
     if (bodyA.isDynamic) {
-      const velAdjust = normal.scale(normal.dot(bodyA.vel.negate()));
-      bodyA.vel = bodyA.vel.add(velAdjust);
+      const velAdjust = normal.scale(normal.dot(bodyA.stepVel.negate()));
+      bodyA.vel = bodyA.stepVel.add(velAdjust);
     }
 
     if (bodyB.isDynamic) {
-      const velAdjust = normal.scale(normal.dot(bodyB.vel.negate()));
-      bodyB.vel = bodyB.vel.add(velAdjust);
+      const velAdjust = normal.scale(normal.dot(bodyB.stepVel.negate()));
+      bodyB.vel = bodyB.stepVel.add(velAdjust);
     }
   }
 }

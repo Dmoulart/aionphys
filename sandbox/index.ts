@@ -14,11 +14,11 @@ ctx.strokeStyle = 'white';
 const square = new Body({
     shape: new Box(10, 10),
     pos: new Vector(200, 150),
-    vel: new Vector(10, 0)
+    vel: new Vector(0, 0)
 });
 
 const square2 = new Body({
-    shape: new Box(2, 100),
+    shape: new Box(1, 100),
     pos: new Vector(800, 200),
     vel: new Vector(-10, 0)
 });
@@ -45,7 +45,7 @@ document.body.onmousemove = (e) => {
 };
 
 document.body.onkeydown = (e) => {
-    const speed = 10 //* Time.scaleFactor;
+    const speed = 40 //* Time.scaleFactor;
     switch (e.key) {
         case 'ArrowLeft':
             square.vel = square.vel.add(new Vector(-speed, 0));
@@ -66,13 +66,13 @@ document.body.onkeydown = (e) => {
             break;
     }
 };
-const bodies = [square, square2, floor, ...createBodies(50)];
+const bodies = [square, square2, floor, ...createBodies(40)];
 
 // Create world
 const world = new World({
     bodies,
-    gravity: new Vector(0, 1),
-    iterations: 2
+    gravity: new Vector(0, 0.1),
+    iterations: 8
 });
 world.wire(eventDispatcher);
 
