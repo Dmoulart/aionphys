@@ -1,4 +1,4 @@
-import { Circle, Polygon, Vector } from "aionsat";
+import { Circle, Polygon, Shape, Vector } from "aionsat";
 
 /**
  * The Axis Aligned Bounding Box (AABB) is a 2D rectangle that approximate a body's shape.
@@ -58,12 +58,27 @@ export class AABB {
     }
 
     /**
+     * Returns true if it collides with another AABB.
+     * 
+     * @param other 
+     * @returns intersects other axis aligned bounding box
+     */
+    public intersects(other: AABB): boolean {
+        return !(
+            this.min.x > other.max.x ||
+            this.max.x < other.min.x ||
+            this.min.y > other.max.y ||
+            this.max.y < other.min.y
+        );
+    }
+
+    /**
      * Generate a new axis aligned bounding box from a body.
      * 
      * @param shape 
      * @returns axis aligned bounding box
      */
-    public static from(shape: Circle | Polygon): AABB {
+    public static from(shape: Shape): AABB {
         if (shape instanceof Circle) {
             return AABB.fromCircle(shape);
         } else if (shape instanceof Polygon) {

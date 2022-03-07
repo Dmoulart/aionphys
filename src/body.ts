@@ -1,5 +1,6 @@
 import { Circle, Shape, Vector } from 'aionsat';
 import { BodyBehaviors } from './body-behavior';
+import { AABB } from './math/aabb';
 
 /**
  * The body initialization object type.
@@ -66,10 +67,11 @@ export class Body {
   }
 
   /**
+   * Get the body's axis aligned bounding box.
    * 
    */
   aabb() {
-    
+    return AABB.from(this.shape)
   }
 
   /**

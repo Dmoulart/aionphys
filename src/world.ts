@@ -9,6 +9,7 @@ import { emit } from 'process';
 import { Vector } from 'aionsat';
 import { BodyBehaviors } from './body-behavior';
 import { Time } from './time';
+import { AABBBroadphase } from './broadphase/aabb-broadphase';
 
 /**
  * The world initialization attributes.

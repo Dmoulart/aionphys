@@ -1,6 +1,6 @@
 import { EventEmitter } from 'aion-events';
 import { Box, Circle, Polygon, Sat, Shape, vec, Vector } from 'aionsat';
-import { Body, CollisionData, CollisionEvents, Time, World } from '../dist';
+import { Body, CollisionData, CollisionEvents, Time, World, AABBBroadphase, NaiveBroadphase } from '../dist';
 
 // Create canvas
 const canvas = document.createElement('canvas');
@@ -74,13 +74,14 @@ document.body.onkeydown = (e) => {
     }
 };
 // Create bodies
-const bodies = [square, square2, wallLeft, wallRight, floor, roof, ...createBodies(0)];
+const bodies = [square, square2, wallLeft, wallRight, floor, roof, ...createBodies(150)];
 
 // Create world
 const world = new World({
     bodies,
     gravity: new Vector(0, 0.1),
-    iterations: 10
+    broadphase: new AABBBroadphase(),
+    iterations: 1
 });
 
 // Listen for collisions
@@ -99,9 +100,9 @@ world.wire(eventDispatcher);
 // Launch loop
 (function loop() {
     ctx.clearRect(0, 0, innerWidth, innerHeight);
-
+    console.time('world:step')
     world.step();
-
+    console.timeEnd('world:step')
     bodies.forEach(draw);
 
     requestAnimationFrame(loop);
