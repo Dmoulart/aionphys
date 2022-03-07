@@ -47,24 +47,12 @@ const roof = new Body({
     behavior: Body.Behaviors.Static
 });
 
-
-const eventDispatcher = new EventEmitter();
-
-eventDispatcher.on(CollisionEvents.PostSolve, ({ bodyA, bodyB, normal, overlap }: CollisionData) => {
-    if (bodyB.isStatic) return;
-    //console.log('COL');
-    if (bodyA.vel.x > normal.x && bodyA.vel.y > normal.y) {
-        const force = bodyB.vel.sub(normal);
-        bodyB.vel = force;
-    }
-});
-
 document.body.onmousemove = (e) => {
     //square.pos = new Vector(e.clientX, e.clientY);
 };
 
 document.body.onkeydown = (e) => {
-    const speed = 180 //* Time.scaleFactor;
+    const speed = 18 //* Time.scaleFactor;
     switch (e.key) {
         case 'ArrowLeft':
             square.vel = square.vel.add(new Vector(-speed, 0));
@@ -85,22 +73,31 @@ document.body.onkeydown = (e) => {
             break;
     }
 };
+// Create bodies
 const bodies = [square, square2, wallLeft, wallRight, floor, roof, ...createBodies(0)];
 
 // Create world
 const world = new World({
     bodies,
     gravity: new Vector(0, 0.1),
-    iterations: 180
+    iterations: 10
 });
+
+// Listen for collisions
+const eventDispatcher = new EventEmitter();
+eventDispatcher.on(CollisionEvents.PostSolve, ({ bodyA, bodyB, normal, overlap }: CollisionData) => {
+    if (bodyB.isStatic) return;
+    if (bodyA.vel.x > normal.x && bodyA.vel.y > normal.y) {
+        const force = bodyB.vel.sub(normal);
+        bodyB.vel = force;
+    }
+});
+
 world.wire(eventDispatcher);
 
-eventDispatcher.on(CollisionEvents.PostSolve, ({ bodyA, bodyB, normal }: CollisionData) => {
-    // bodyB.vel = bodyB.vel.add(normal.scale(1))
-});
 
 // Launch loop
-(function loop(hrt) {
+(function loop() {
     ctx.clearRect(0, 0, innerWidth, innerHeight);
 
     world.step();
@@ -117,7 +114,6 @@ function createBodies(n = 1, size = 50) {
     for (let i = 0; i < n; i++) {
         const body = new Body({
             shape: Math.random() > 0.5 ? new Box(Math.random() * size, Math.random() * size) : new Circle(Math.random() * size),
-            //shape: new Box(Math.random() * 100, Math.random() * 100),
             pos: new Vector(Math.random() * 500, Math.random() * 500),
             vel: new Vector(
                 Math.random() * 10 * Math.random() > 0.5 ? -1 : 1,

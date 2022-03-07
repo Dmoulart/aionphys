@@ -10,13 +10,45 @@ import { Vector } from 'aionsat';
 import { BodyBehaviors } from './body-behavior';
 import { Time } from './time';
 
+/**
+ * The world initialization attributes.
+ * 
+ */
 export type WorldOptions = {
+  /**
+   * The bodies to add to the world.
+   */
   bodies: Body[];
+
+  /**
+   * The broadphase implementaiton to use.
+   */
   broadphase?: BroadphaseInterface;
+
+  /**
+   * The collision detector implementation to use.
+   */
   detector?: CollisionDetectorInterface;
+
+  /**
+   * The collision solver implementation to use.
+   */
   solver?: CollisionSolverInterface;
+
+  /**
+   * The gravity constant. Apply at every iteration step.
+   */
   gravity?: Vector;
+
+  /**
+   * The deceleration constant. Apply at every iteration step.
+   */
   deceleration?: number;
+
+  /**
+   * The iteration number. That is to say the number of times the world 
+   * will move bodies and calculate collisions by step.
+   */
   iterations?: number;
 };
 

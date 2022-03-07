@@ -1,3 +1,7 @@
+/**
+ * The time class contains all the timing related methods and properties.
+ * 
+ */
 export class Time {
   /**
    * The iteration delta time.

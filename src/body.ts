@@ -30,7 +30,7 @@ export class Body {
   private _shape!: Shape;
 
   /**
-   * The geometry of the body.
+   * The velocity of the body.
    *
    */
   private _vel!: Vector;
@@ -47,11 +47,16 @@ export class Body {
   private _stepVel!: Vector;
 
   /**
-   * The body behavior.
+   * The body's behavior.
    *
    */
   private _behavior!: BodyBehaviors;
 
+  /**
+   * Initialize a new body. Use the body options or use the default options.
+   * 
+   * @param options the body initialization object
+   */
   constructor(options: BodyOptions) {
     const { shape, pos, vel, behavior } = options;
     this.shape = shape ?? new Circle(10);
