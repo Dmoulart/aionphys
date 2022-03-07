@@ -17,6 +17,7 @@ export type WorldOptions = {
   solver?: CollisionSolverInterface;
   gravity?: Vector;
   deceleration?: number;
+  iterations?: number;
 };
 
 /**
@@ -62,15 +63,24 @@ export class World extends EventEmitter {
    */
   private readonly _DECELERATION: number = 0.97;
 
+  /**
+   * The number of iterations per step. It allows us to control the accuracy of the simulation 
+   * at the cost of performance.
+   * 
+   */
+  private readonly _ITERATIONS: number = 3
+
+
   public constructor(options: WorldOptions) {
     super();
-    const { bodies, broadphase, detector, solver, gravity, deceleration } = options;
+    const { bodies, broadphase, detector, solver, gravity, deceleration, iterations } = options;
     this.bodies = bodies;
     this.broadphase = broadphase ?? new NaiveBroadphase();
     this.detector = detector ?? new SatDetector();
     this.solver = solver ?? new ArcadeSolver();
     this.gravity = gravity ?? this.gravity;
     this._DECELERATION = deceleration ?? this._DECELERATION;
+    this._ITERATIONS = iterations ?? this._ITERATIONS;
   }
 
   /**
@@ -81,24 +91,31 @@ export class World extends EventEmitter {
   public step(): void {
     // Caclculate the delta time.
     Time.dt = Time.now - Time.lastFrameTime;
+    console.log(Time.dt)
+    // Initialize the iteration counter.
+    let counter = 0;
 
-    // Update the positions of the bodies in the world.
-    this.translateBodies();
+    while (counter < this._ITERATIONS) {
+      console.log(counter)
+      // Update the positions of the bodies in the world.
+      this.translateBodies();
 
-    // Detect pair of bodies which are potentially colliding.
-    const pairs = this.broadphase.pair(this.bodies);
+      // Detect pair of bodies which are potentially colliding.
+      const pairs = this.broadphase.pair(this.bodies);
 
-    for (let i = 0; i < pairs.length; i++) {
-      // Extract pair
-      const { bodyA, bodyB } = pairs[i];
+      for (let i = 0; i < pairs.length; i++) {
+        // Extract pair
+        const { bodyA, bodyB } = pairs[i];
 
-      // Detect collision
-      const collision = this.detector.intersects(bodyA, bodyB);
+        // Detect collision
+        const collision = this.detector.intersects(bodyA, bodyB);
 
-      // Resolve collision
-      if (collision) {
-        this.solver.solve({ ...collision, bodyA, bodyB });
+        // Resolve collision
+        if (collision) {
+          this.solver.solve({ ...collision, bodyA, bodyB });
+        }
       }
+      counter++
     }
 
     // // Save the last frame time
@@ -145,7 +162,12 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   private translate(body: Body): void {
-    body.pos = body.pos.add(body.vel.scale(Time.scaleFactor));
+    const move = body.vel.scale(Time.scaleFactor);
+    body.pos = body.pos.add(new Vector(
+      move.x,
+      move.y
+    ));
+    //body.pos = body.pos.add(move);
   }
 
   /**
@@ -155,7 +177,11 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   private applyGravity(body: Body): void {
-    body.vel = body.vel.add(this._gravity.scale(Time.scaleFactor));
+    const force = this._gravity//.scale(Time.scaleFactor);
+    body.vel = body.vel.add(new Vector(
+      force.x,// ,
+      force.y,//
+    ));
   }
 
   /**

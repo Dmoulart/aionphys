@@ -1,6 +1,6 @@
 import { EventEmitter } from 'aion-events';
 import { Box, Circle, Polygon, Sat, Shape, vec, Vector } from 'aionsat';
-import { Body, CollisionData, CollisionEvents, World } from '../dist';
+import { Body, CollisionData, CollisionEvents, Time, World } from '../dist';
 
 // Create canvas
 const canvas = document.createElement('canvas');
@@ -12,123 +12,131 @@ ctx.strokeStyle = 'white';
 
 // Create bodies
 const square = new Body({
-  shape: new Box(100, 100),
-  pos: new Vector(200, 150),
-  vel: new Vector(10, 0)
+    shape: new Box(10, 10),
+    pos: new Vector(200, 150),
+    vel: new Vector(10, 0)
 });
 
 const square2 = new Body({
-  shape: new Box(100, 100),
-  pos: new Vector(800, 200),
-  vel: new Vector(-30, 0)
+    shape: new Box(2, 100),
+    pos: new Vector(800, 200),
+    vel: new Vector(-10, 0)
 });
 
 const floor = new Body({
-  shape: new Box(innerWidth, 10),
-  pos: new Vector(0, window.innerHeight - 50),
-  behavior: Body.Behaviors.Static
+    shape: new Box(innerWidth, 10),
+    pos: new Vector(0, window.innerHeight - 50),
+    behavior: Body.Behaviors.Static
 });
 
 const eventDispatcher = new EventEmitter();
 
 eventDispatcher.on(CollisionEvents.PostSolve, ({ bodyA, bodyB, normal, overlap }: CollisionData) => {
-  if (bodyB.isStatic) return;
-  //console.log('COL');
-  if (bodyA.vel.x > normal.x && bodyA.vel.y > normal.y) {
-    const force = bodyB.vel.sub(normal);
-    bodyB.vel = force;
-  }
+    if (bodyB.isStatic) return;
+    //console.log('COL');
+    if (bodyA.vel.x > normal.x && bodyA.vel.y > normal.y) {
+        const force = bodyB.vel.sub(normal);
+        bodyB.vel = force;
+    }
 });
 
 document.body.onmousemove = (e) => {
-  //square.pos = new Vector(e.clientX, e.clientY);
+    //square.pos = new Vector(e.clientX, e.clientY);
 };
 
 document.body.onkeydown = (e) => {
-  switch (e.key) {
-    case 'ArrowLeft':
-      square.vel.x = -10;
-      break;
-    case 'ArrowRight':
-      square.vel.x = 10;
-      break;
-    case 'ArrowUp':
-      square.vel.y = -10;
-      break;
-    case 'ArrowDown':
-      square.vel.y = 10;
-      break;
-    default:
-      break;
-  }
+    const speed = 10 //* Time.scaleFactor;
+    switch (e.key) {
+        case 'ArrowLeft':
+            square.vel = square.vel.add(new Vector(-speed, 0));
+            //square.vel.x = -speed;
+            break;
+        case 'ArrowRight':
+            square.vel = square.vel.add(new Vector(speed, 0));
+            break;
+        case 'ArrowUp':
+            square.vel = square.vel.add(new Vector(0, -speed));
+            break;
+        case 'ArrowDown':
+            square.vel = square.vel.add(new Vector(0, speed));
+            break;
+        case ' ':
+            square.vel = square.vel.add(new Vector(0, -20));
+        default:
+            break;
+    }
 };
-const bodies = [square, square2, floor, ...createBodies(10)];
+const bodies = [square, square2, floor, ...createBodies(50)];
 
 // Create world
-const world = new World({ bodies, gravity: new Vector(0, 0.1) });
+const world = new World({
+    bodies,
+    gravity: new Vector(0, 1),
+    iterations: 2
+});
 world.wire(eventDispatcher);
 
 eventDispatcher.on(CollisionEvents.PostSolve, ({ bodyA, bodyB, normal }: CollisionData) => {
-  // bodyB.vel = bodyB.vel.add(normal.scale(1))
+    // bodyB.vel = bodyB.vel.add(normal.scale(1))
 });
 
 // Launch loop
 (function loop(hrt) {
-  ctx.clearRect(0, 0, innerWidth, innerHeight);
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
 
-  world.step();
+    world.step();
 
-  bodies.forEach(draw);
+    bodies.forEach(draw);
 
-  requestAnimationFrame(loop);
+    requestAnimationFrame(loop);
 })();
 
 //----------------------------UTILS-----------------------------------------------
 
-function createBodies(n = 1) {
-  const bodies = [];
-  for (let i = 0; i < n; i++) {
-    const body = new Body({
-      shape: Math.random() > 0.5 ? new Box(Math.random() * 100, Math.random() * 100) : new Circle(Math.random() * 100),
-      //shape: new Box(Math.random() * 100, Math.random() * 100),
-      pos: new Vector(Math.random() * 500, Math.random() * 500),
-      vel: new Vector(
-        Math.random() * 50 * Math.random() > 0.5 ? -1 : 1,
-        Math.random() * 50 * Math.random() > 0.5 ? -1 : 1
-      )
-    });
-    bodies.push(body);
-  }
-  return bodies;
+function createBodies(n = 1, size = 50) {
+    const bodies = [];
+    for (let i = 0; i < n; i++) {
+        const body = new Body({
+            shape: Math.random() > 0.5 ? new Box(Math.random() * size, Math.random() * size) : new Circle(Math.random() * size),
+            //shape: new Box(Math.random() * 100, Math.random() * 100),
+            pos: new Vector(Math.random() * 500, Math.random() * 500),
+            vel: new Vector(
+                Math.random() * 10 * Math.random() > 0.5 ? -1 : 1,
+                Math.random() * 10 * Math.random() > 0.5 ? -1 : 1
+            )
+        });
+        bodies.push(body);
+    }
+    return bodies;
 }
 
 function draw(body: Body) {
-  if (body.shape instanceof Polygon) {
-    drawPolygon(body.shape);
-  }
-  if (body.shape instanceof Circle) {
-    drawCircle(body.shape);
-  }
+    if (body.shape instanceof Polygon) {
+        drawPolygon(body.shape);
+    }
+    if (body.shape instanceof Circle) {
+        drawCircle(body.shape);
+    }
 }
 
 function drawPolygon(polygon: Polygon, color = 'white') {
-  ctx.strokeStyle = color;
-  ctx.beginPath();
-  polygon.vertices.forEach((v, i) => {
-    if (i === 0) {
-      ctx.moveTo(v.x, v.y);
-    } else {
-      ctx.lineTo(v.x, v.y);
-    }
-  });
-  ctx.closePath();
-  ctx.stroke();
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    polygon.vertices.forEach((v, i) => {
+        if (i === 0) {
+            ctx.moveTo(v.x, v.y);
+        } else {
+            ctx.lineTo(v.x, v.y);
+        }
+    });
+    ctx.closePath();
+    ctx.stroke();
 }
 
 function drawCircle(circle: Circle, color = 'white') {
-  ctx.strokeStyle = color;
-  ctx.beginPath();
-  ctx.arc(circle.pos.x, circle.pos.y, circle.radius, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.closePath();
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    ctx.arc(circle.pos.x, circle.pos.y, circle.radius, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.closePath();
 }
