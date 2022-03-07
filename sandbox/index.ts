@@ -29,6 +29,25 @@ const floor = new Body({
     behavior: Body.Behaviors.Static
 });
 
+const wallLeft = new Body({
+    shape: new Box(10, innerHeight),
+    pos: new Vector(0, 0),
+    behavior: Body.Behaviors.Static
+});
+
+const wallRight = new Body({
+    shape: new Box(10, innerHeight),
+    pos: new Vector(innerWidth - 10, 0),
+    behavior: Body.Behaviors.Static
+});
+
+const roof = new Body({
+    shape: new Box(innerWidth, 10),
+    pos: new Vector(0, 0),
+    behavior: Body.Behaviors.Static
+});
+
+
 const eventDispatcher = new EventEmitter();
 
 eventDispatcher.on(CollisionEvents.PostSolve, ({ bodyA, bodyB, normal, overlap }: CollisionData) => {
@@ -45,7 +64,7 @@ document.body.onmousemove = (e) => {
 };
 
 document.body.onkeydown = (e) => {
-    const speed = 40 //* Time.scaleFactor;
+    const speed = 180 //* Time.scaleFactor;
     switch (e.key) {
         case 'ArrowLeft':
             square.vel = square.vel.add(new Vector(-speed, 0));
@@ -66,13 +85,13 @@ document.body.onkeydown = (e) => {
             break;
     }
 };
-const bodies = [square, square2, floor, ...createBodies(40)];
+const bodies = [square, square2, wallLeft, wallRight, floor, roof, ...createBodies(0)];
 
 // Create world
 const world = new World({
     bodies,
     gravity: new Vector(0, 0.1),
-    iterations: 8
+    iterations: 180
 });
 world.wire(eventDispatcher);
 
