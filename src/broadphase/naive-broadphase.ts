@@ -1,6 +1,7 @@
 import { Body } from '../body';
 import { BroadphaseInterface } from './broadphase-interface';
 import { BodyPair } from './body-pair';
+import { World } from '../world';
 
 /**
  * A really naive broadphase implementation used to make the engine works.
@@ -8,6 +9,11 @@ import { BodyPair } from './body-pair';
  *
  */
 export class NaiveBroadphase implements BroadphaseInterface {
+  /**
+   * A reference to the simulation world.
+   */
+  world!: World;
+
   /**
    * @inheritdoc
    */

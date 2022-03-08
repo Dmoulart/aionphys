@@ -9,7 +9,8 @@ import { emit } from 'process';
 import { Vector } from 'aionsat';
 import { BodyBehaviors } from './body-behavior';
 import { Time } from './time';
-import { AABBBroadphase } from './broadphase/aabb-broadphase';
+import { AABBBruteBroadphase } from './broadphase/aabb-brute-broadphase';
+import { Size } from './math/size';
 
 /**
  * The world initialization attributes.
@@ -18,40 +19,109 @@ import { AABBBroadphase } from './broadphase/aabb-broadphase';
 export type WorldOptions = {
   /**
    * The bodies to add to the world.
+   * 
    */
   bodies: Body[];
 
   /**
    * The broadphase implementaiton to use.
+   * 
    */
   broadphase?: BroadphaseInterface;
 
   /**
    * The collision detector implementation to use.
+   * 
    */
   detector?: CollisionDetectorInterface;
 
   /**
    * The collision solver implementation to use.
+   * 
    */
   solver?: CollisionSolverInterface;
 
   /**
    * The gravity constant. Apply at every iteration step.
+   * 
    */
   gravity?: Vector;
 
   /**
    * The deceleration constant. Apply at every iteration step.
+   * 
    */
   deceleration?: number;
 
   /**
    * The iteration number. That is to say the number of times the world 
    * will move bodies and calculate collisions by step.
+   * 
    */
   iterations?: number;
+
+  /**
+   * The world's size in pixels.
+   * 
+   */
+  size?: Size;
 };
+
+/**
+ * Spatial informations about the world simulation dimensions.
+ * 
+ */
+export type WorldBounds = Size & {
+  /**
+   * The world's half width.
+   */
+  halfWidth: number,
+
+  /**
+   * The world's half height.
+   */
+  halfHeight: number,
+
+  /**
+   * The world's top left corner.
+   */
+  topLeft: Vector,
+
+  /**
+   * The world's bottom left corner.
+   */
+  bottomLeft: Vector,
+
+  /**
+   * The world's mid left point.
+   */
+  midLeft: Vector,
+
+  /**
+   * The world's top right corner.
+   */
+  topRight: Vector,
+
+  /**
+   * The world's bottom right corner.
+   */
+  bottomRight: Vector,
+
+  /**
+   * The world's top center.
+   */
+  topCenter: Vector,
+
+  /**
+   * The world's bottom center.
+   */
+  bottomCenter: Vector,
+
+  /**
+   * The world's center point.
+   */
+  center: Vector
+}
 
 /**
  * The world is the container for all physics bodies in the simulation.
@@ -88,32 +158,66 @@ export class World extends EventEmitter {
    * The gravity force applied to all bodies in the world.
    *
    */
-  private _gravity: Vector = Vector.origin;
+  private _gravity!: Vector;
+
+  /**
+   * Spatial informations about the world simulation dimensions.
+   * 
+   */
+  private _bounds!: WorldBounds;
 
   /**
    * The deceleration constant. It is applied at every step to every bodies.
    *
    */
-  private readonly _DECELERATION: number = 0.97;
+  private readonly _DECELERATION!: number;
 
   /**
    * The number of iterations per step. It allows us to control the accuracy of the simulation 
    * at the cost of performance.
    * 
    */
-  private readonly _ITERATIONS: number = 3
+  private readonly _ITERATIONS!: number
+
+  /**
+   * The world's size in pixels.
+   * 
+   */
+  private readonly _SIZE!: Size;
 
 
   public constructor(options: WorldOptions) {
     super();
-    const { bodies, broadphase, detector, solver, gravity, deceleration, iterations } = options;
+    const {
+      bodies,
+      broadphase,
+      detector,
+      solver,
+      gravity,
+      deceleration,
+      iterations,
+      size
+    } = options;
+
+    // Bodies
     this.bodies = bodies;
+
+    // Processing pipeline
     this.broadphase = broadphase ?? new NaiveBroadphase();
+    this.broadphase.world = this
     this.detector = detector ?? new SatDetector();
     this.solver = solver ?? new ArcadeSolver();
-    this.gravity = gravity ?? this.gravity;
-    this._DECELERATION = deceleration ?? this._DECELERATION;
-    this._ITERATIONS = iterations ?? this._ITERATIONS;
+
+    // Physics values
+    this.gravity = gravity ?? Vector.origin;
+
+    // Constants
+    this._DECELERATION = deceleration ?? 0.97;
+    this._ITERATIONS = iterations ?? 3;
+    this._SIZE = size ?? {
+      width: window.innerWidth,
+      height: window.innerHeight
+    }
   }
 
   /**
@@ -335,5 +439,41 @@ export class World extends EventEmitter {
    */
   public set gravity(gravity: Vector) {
     this._gravity = gravity;
+  }
+
+  /**
+   * Get the world size in pixels.
+   * 
+   * @returns world's width and height
+   */
+  public get SIZE(): { width: number, height: number } {
+    return this._SIZE;
+  }
+
+  /**
+   * Get spatial informations about the world.
+   * 
+   * @returns world's bounds
+   */
+  public get bounds(): WorldBounds {
+
+    if (!this._bounds) {
+      // Register the worlds spatial informations.
+      this._bounds = {
+        halfWidth: this._SIZE.width / 2,
+        halfHeight: this._SIZE.height / 2,
+        ...this.SIZE,
+        topLeft: new Vector(0, 0),
+        topRight: new Vector(this._SIZE.width, 0),
+        topCenter: new Vector(this._SIZE.width / 2, 0),
+        bottomLeft: new Vector(0, this._SIZE.height),
+        bottomRight: new Vector(this._SIZE.width, this._SIZE.height),
+        bottomCenter: new Vector(this._SIZE.width / 2, this._SIZE.height),
+        center: new Vector(this._SIZE.width / 2, this._SIZE.height / 2),
+        midLeft: new Vector(0, this._SIZE.height / 2),
+      }
+    }
+
+    return this._bounds
   }
 }

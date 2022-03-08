@@ -1,12 +1,19 @@
 import { Body } from '../body';
 import { BroadphaseInterface } from './broadphase-interface';
 import { BodyPair } from './body-pair';
+import { World } from '../world';
 
 /**
  * A naive broadphase implementation using axis aligned bounding box.
  *
  */
-export class AABBBroadphase implements BroadphaseInterface {
+export class AABBBruteBroadphase implements BroadphaseInterface {
+
+  /**
+   * A reference to the simulation world.
+   */
+  world!: World;
+
   /**
    * @inheritdoc
    */
@@ -30,19 +37,7 @@ export class AABBBroadphase implements BroadphaseInterface {
     }
     return pairs
   }
+
 }
-    //   const len = pairs.length
-    //   for (let i = 0, j = len; i < j; i++, j--) {
-    //     if (i === j) continue;
-    //     const intersects = bodies[i].aabb().intersects(bodies[j].aabb())
 
-    //     if (!intersects) continue
-
-    //     pairs.push({
-    //       bodyA: bodies[i],
-    //       bodyB: bodies[j]
-    //     });
-    //   }
-    //   return pairs
-    // }
 
