@@ -74,6 +74,7 @@ export class Time {
    * @returns god knows what
    */
   public static get scaleFactor() {
-    return Time.dt * Time.FPS;
+    return 1
+    //return Time.dt * Time.FPS;
   }
 }

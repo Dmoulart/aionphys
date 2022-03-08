@@ -26,9 +26,23 @@ export class AABBBroadphase implements BroadphaseInterface {
           bodyB: bodies[j]
         });
 
-
       }
     }
     return pairs
   }
 }
+    //   const len = pairs.length
+    //   for (let i = 0, j = len; i < j; i++, j--) {
+    //     if (i === j) continue;
+    //     const intersects = bodies[i].aabb().intersects(bodies[j].aabb())
+
+    //     if (!intersects) continue
+
+    //     pairs.push({
+    //       bodyA: bodies[i],
+    //       bodyB: bodies[j]
+    //     });
+    //   }
+    //   return pairs
+    // }
+

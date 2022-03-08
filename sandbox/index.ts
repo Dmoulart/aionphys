@@ -10,6 +10,14 @@ document.body.appendChild(canvas);
 const ctx = canvas.getContext('2d');
 ctx.strokeStyle = 'white';
 
+// Add counter
+const BODY_COUNT = 100;
+bodyCounter(BODY_COUNT);
+
+// Add iterations counter
+const ITERATIONS = 3
+iterationsCounter(ITERATIONS);
+
 // Create bodies
 const square = new Body({
     shape: new Box(10, 10),
@@ -47,7 +55,17 @@ const roof = new Body({
     behavior: Body.Behaviors.Static
 });
 
-document.body.onmousemove = (e) => {
+document.body.onclick = (e) => {
+    for (let i = 0; i < 10; i++) {
+        const body = createBody(
+            e.clientX + Math.random() * 50,
+            e.clientY + Math.random() * 50,
+            50
+        );
+        world.bodies.push(body);
+    }
+
+    bodyCounter(world.bodies.length);
     //square.pos = new Vector(e.clientX, e.clientY);
 };
 
@@ -74,14 +92,14 @@ document.body.onkeydown = (e) => {
     }
 };
 // Create bodies
-const bodies = [square, square2, wallLeft, wallRight, floor, roof, ...createBodies(150)];
+const bodies = [square, square2, wallLeft, wallRight, floor, roof, ...createBodies(BODY_COUNT)];
 
 // Create world
 const world = new World({
     bodies,
-    gravity: new Vector(0, 0.1),
+    gravity: new Vector(0, 0.5),
     broadphase: new AABBBroadphase(),
-    iterations: 1
+    iterations: ITERATIONS
 });
 
 // Listen for collisions
@@ -100,11 +118,9 @@ world.wire(eventDispatcher);
 // Launch loop
 (function loop() {
     ctx.clearRect(0, 0, innerWidth, innerHeight);
-    console.time('world:step')
     world.step();
-    console.timeEnd('world:step')
     bodies.forEach(draw);
-
+    //fpsCounter(Time.dt);
     requestAnimationFrame(loop);
 })();
 
@@ -113,17 +129,21 @@ world.wire(eventDispatcher);
 function createBodies(n = 1, size = 50) {
     const bodies = [];
     for (let i = 0; i < n; i++) {
-        const body = new Body({
-            shape: Math.random() > 0.5 ? new Box(Math.random() * size, Math.random() * size) : new Circle(Math.random() * size),
-            pos: new Vector(Math.random() * 500, Math.random() * 500),
-            vel: new Vector(
-                Math.random() * 10 * Math.random() > 0.5 ? -1 : 1,
-                Math.random() * 10 * Math.random() > 0.5 ? -1 : 1
-            )
-        });
+        const body = createBody(Math.random() * innerWidth, Math.random() * innerHeight, size);
         bodies.push(body);
     }
     return bodies;
+}
+
+function createBody(posx: number, posy: number, size: number) {
+    return new Body({
+        shape: Math.random() > 0.5 ? new Box(Math.random() * size, Math.random() * size) : new Circle(Math.random() * size),
+        pos: new Vector(posx, posy),
+        vel: new Vector(
+            Math.random() * 10 * Math.random() > 0.5 ? -1 : 1,
+            Math.random() * 10 * Math.random() > 0.5 ? -1 : 1
+        )
+    });
 }
 
 function draw(body: Body) {
@@ -156,3 +176,77 @@ function drawCircle(circle: Circle, color = 'white') {
     ctx.stroke();
     ctx.closePath();
 }
+
+function iterationsCounter(iterations: number) {
+    let el = document.querySelector('#iterations-count')
+    console.log(el)
+    if (!el) {
+        createIndicator(`${iterations} iterations`, 5, 15, 'iterations-count')
+    }
+    else {
+        el = createIndicator(`${iterations} iterations`, 5, 15, 'iterations-count')
+    }
+}
+
+function bodyCounter(bodyCount: number) {
+    let el = document.querySelector('#body-count')
+    console.log(el)
+    if (!el) {
+        createIndicator(`${bodyCount} bodies`, 5, 5, 'body-count')
+    }
+    else {
+        el.innerHTML = `${bodyCount} bodies`
+    }
+}
+
+
+function fpsCounter(fps: number) {
+    this.frame ??= 0
+    this.frame += 1
+    // this.timeStart ??= performance.now()
+    // this.timeNow = performance.now()
+
+    // fps = (this.frame / (this.timeNow - this.timeStart))
+    if (this.frame > 10) {
+        fps = Math.round(Time.dt * 1000 * 60)
+        // Calculate frames per seconds
+
+
+        let el = document.querySelector('#fps-count')
+        console.log(el)
+        if (!el) {
+            createIndicator(`${fps} DT`, 5, 1, 'fps-count')
+        }
+        else {
+            el.innerHTML = `${fps} DT`
+        }
+        this.frame = 0
+    }
+
+
+
+}
+
+
+function createIndicator(content: string | number, left: number, top: number, id: string) {
+    const div = document.createElement('div');
+    div.id = id;
+    div.innerHTML = `${content}`;
+    div.style.position = 'absolute';
+    div.style.display = 'flex';
+    div.style.justifyContent = 'center';
+    div.style.width = '200px';
+    div.style.height = '120px';
+    div.style.left = `${left}vw`;
+    div.style.top = `${top}vh`;
+    div.style.color = 'white';
+    div.style.fontSize = '2rem';
+    div.style.alignItems = 'center';
+    div.style.zIndex = '9999';
+    if (!document.querySelector(`#${id}`)) {
+        document.body.appendChild(div);
+    }
+
+    return div
+}
+
