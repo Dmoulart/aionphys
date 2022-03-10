@@ -3,7 +3,7 @@ import { BroadphaseInterface } from './broadphase-interface';
 import { BodyPair } from './body-pair';
 import { World } from '../world';
 import { AABB } from '../math/aabb';
-import { Box, Vector } from 'aionsat';
+import { Box } from 'aionsat';
 
 /**
  * A broadphase implementation which use axis aligned bounding box and divide space into cells.
@@ -75,8 +75,6 @@ export class AABBSpatialBroadphase implements BroadphaseInterface {
         }
       }
     }
-
-    console.log(cells)
 
     // Check for collision inside each cells
     for (let c = 0; c < Object.entries(cells).length; c++) {

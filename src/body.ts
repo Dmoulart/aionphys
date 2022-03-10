@@ -8,9 +8,14 @@ import { AABB } from './math/aabb';
  */
 export type BodyOptions = {
   shape?: Shape;
+
   pos?: Vector;
+
   vel?: Vector;
+
   behavior?: BodyBehaviors;
+
+  data?: Record<string, any>
 };
 
 /**
@@ -54,16 +59,23 @@ export class Body {
   private _behavior!: BodyBehaviors;
 
   /**
+   * Data of any form can be attached to the body.
+   * It is used for debug purposed.
+   */
+  private _data!: Record<string, any>;
+
+  /**
    * Initialize a new body. Use the body options or use the default options.
    * 
    * @param options the body initialization object
    */
   constructor(options: BodyOptions) {
-    const { shape, pos, vel, behavior } = options;
+    const { shape, pos, vel, behavior, data } = options;
     this.shape = shape ?? new Circle(10);
     this.pos = pos ?? new Vector(0, 0);
     this.vel = vel ?? new Vector(0, 0);
     this.behavior = behavior ?? BodyBehaviors.Dynamic;
+    this.data = data ?? {}
   }
 
   /**
@@ -181,5 +193,23 @@ export class Body {
    */
   get isStatic(): boolean {
     return this.behavior === BodyBehaviors.Static;
+  }
+
+  /**
+   * Get the body data.
+   * 
+   * @returns body data
+   */
+  public get data(): Record<string, any> {
+    return this._data;
+  }
+
+  /**
+   * Set the body data.
+   * 
+   * @param data
+   */
+  public set data(data: Record<string, any>) {
+    this._data = data;
   }
 }

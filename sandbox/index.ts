@@ -11,7 +11,7 @@ const ctx = canvas.getContext('2d');
 ctx.strokeStyle = 'white';
 
 // Add counter
-const BODY_COUNT = 100;
+const BODY_COUNT = 2;
 bodyCounter(BODY_COUNT);
 
 // Add iterations counter
@@ -22,13 +22,22 @@ iterationsCounter(ITERATIONS);
 const square = new Body({
     shape: new Box(10, 10),
     pos: new Vector(200, 150),
-    vel: new Vector(0, 0)
+    vel: new Vector(0, 0),
+    data: { name: "player" }
 });
 
 const square2 = new Body({
-    shape: new Box(1, 100),
-    pos: new Vector(800, 200),
-    vel: new Vector(-10, 0)
+    shape: new Box(100, 100),
+    pos: new Vector(300, 200),
+    vel: new Vector(5, 1),
+    data: { name: "other" }
+});
+
+const square3 = new Body({
+    shape: new Box(100, 100),
+    pos: new Vector(400, 200),
+    vel: new Vector(-5, 0),
+    data: { name: "otherB" }
 });
 
 const floor = new Body({
@@ -55,26 +64,26 @@ const roof = new Body({
     behavior: Body.Behaviors.Static
 });
 
-document.body.onclick = (e) => {
+function popBodiesonclick(e) {
     for (let i = 0; i < 10; i++) {
         const body = createBody(
             e.clientX + Math.random() * 50,
             e.clientY + Math.random() * 50,
-            50
+            50,
+            0
         );
         world.bodies.push(body);
     }
 
     bodyCounter(world.bodies.length);
     //square.pos = new Vector(e.clientX, e.clientY);
-};
+}
 
-document.body.onkeydown = (e) => {
-    const speed = 18 //* Time.scaleFactor;
+const moveBody = (body) => (e) => {
+    const speed = 2
     switch (e.key) {
         case 'ArrowLeft':
             square.vel = square.vel.add(new Vector(-speed, 0));
-            //square.vel.x = -speed;
             break;
         case 'ArrowRight':
             square.vel = square.vel.add(new Vector(speed, 0));
@@ -87,17 +96,36 @@ document.body.onkeydown = (e) => {
             break;
         case ' ':
             square.vel = square.vel.add(new Vector(0, -20));
+            break;
         default:
             break;
     }
-};
+}
+
+document.body.onclick = popBodiesonclick
+
+// document.body.onmousemove = (e) => {
+//     square.pos = new Vector(e.clientX, e.clientY);
+// }
+
+document.body.onkeydown = moveBody(square)
+
 // Create bodies
-const bodies = [square, square2, wallLeft, wallRight, floor, roof, ...createBodies(BODY_COUNT)];
+const bodies = [
+    square,
+    square2,
+    square3,
+    wallLeft,
+    wallRight,
+    floor,
+    roof,
+    // ...createBodies(BODY_COUNT)
+];
 
 // Create world
 const world = new World({
     bodies,
-    gravity: new Vector(0, 0.5),
+    gravity: new Vector(0, 0),
     broadphase: new AABBSpatialBroadphase(),
     iterations: ITERATIONS
 });
@@ -105,11 +133,41 @@ const world = new World({
 // Listen for collisions
 const eventDispatcher = new EventEmitter();
 eventDispatcher.on(CollisionEvents.PostSolve, ({ bodyA, bodyB, normal, overlap }: CollisionData) => {
-    if (bodyB.isStatic) return;
-    if (bodyA.vel.x > normal.x && bodyA.vel.y > normal.y) {
-        const force = bodyB.vel.sub(normal);
-        bodyB.vel = force;
+    // if ((bodyA.data.name === 'player'
+    //     || bodyB.data.name === 'player')
+    //     &&
+    //     (bodyB.data.name === 'other'
+    //         || bodyA.data.name === 'other')) {
+    //     console.log('BODY A : ', bodyA.data.name)
+    //     console.log('BODY B : ', bodyB.data.name)
+    //     console.log('overlap', normal)
+    // }
+
+    // if (bodyB.isStatic) {
+
+    // }
+
+    const opposite = normal.negate()
+
+    if (bodyA.isDynamic) {
+        const velAdjust = normal.scale(normal.dot(bodyA.stepVel.negate()));
+        bodyA.vel = bodyA.stepVel.add(velAdjust);
     }
+
+
+
+    if (bodyB.isDynamic) {
+        console.log('BODY B OPPOSITE : ', opposite)
+        const velAdjust = opposite.scale(normal.dot(bodyB.stepVel));
+
+        bodyB.vel = bodyB.stepVel.add(velAdjust);
+        console.log('BODY B VEL :', bodyB.vel)
+    }
+
+    // if (bodyA.vel.x > normal.x && bodyA.vel.y > normal.y) {
+    //     const force = bodyB.vel.sub(normal);
+    //     bodyB.vel = force;
+    // }
 });
 
 world.wire(eventDispatcher);
@@ -135,16 +193,18 @@ function createBodies(n = 1, size = 50) {
     return bodies;
 }
 
-function createBody(posx: number, posy: number, size: number) {
+function createBody(posx: number, posy: number, size: number, vel = 10) {
     return new Body({
         shape: Math.random() > 0.5 ? new Box(Math.random() * size, Math.random() * size) : new Circle(Math.random() * size),
         pos: new Vector(posx, posy),
         vel: new Vector(
-            Math.random() * 10 * Math.random() > 0.5 ? -1 : 1,
-            Math.random() * 10 * Math.random() > 0.5 ? -1 : 1
+            Math.random() * vel * Math.random() > 0.5 ? -1 : 1,
+            Math.random() * vel * Math.random() > 0.5 ? -1 : 1
         )
     });
 }
+
+//----------------------------RENDER-----------------------------------------------
 
 function draw(body: Body) {
     if (body.shape instanceof Polygon) {
