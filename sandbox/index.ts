@@ -125,7 +125,7 @@ const bodies = [
 // Create world
 const world = new World({
     bodies,
-    gravity: new Vector(0, 0),
+    gravity: new Vector(0, 0.2),
     broadphase: new AABBSpatialBroadphase(),
     iterations: ITERATIONS
 });
@@ -147,22 +147,22 @@ eventDispatcher.on(CollisionEvents.PostSolve, ({ bodyA, bodyB, normal, overlap }
 
     // }
 
-    const opposite = normal.negate()
+    // const opposite = normal.negate()
 
-    if (bodyA.isDynamic) {
-        const velAdjust = normal.scale(normal.dot(bodyA.stepVel.negate()));
-        bodyA.vel = bodyA.stepVel.add(velAdjust);
-    }
+    // if (bodyA.isDynamic) {
+    //     const velAdjust = normal.scale(normal.dot(bodyA.stepVel.negate()));
+    //     bodyA.vel = bodyA.stepVel.add(velAdjust);
+    // }
 
 
 
-    if (bodyB.isDynamic) {
-        console.log('BODY B OPPOSITE : ', opposite)
-        const velAdjust = opposite.scale(normal.dot(bodyB.stepVel));
+    // if (bodyB.isDynamic) {
+    //     console.log('BODY B OPPOSITE : ', opposite)
+    //     const velAdjust = opposite.scale(normal.dot(bodyB.stepVel));
 
-        bodyB.vel = bodyB.stepVel.add(velAdjust);
-        console.log('BODY B VEL :', bodyB.vel)
-    }
+    //     bodyB.vel = bodyB.stepVel.add(velAdjust);
+    //     console.log('BODY B VEL :', bodyB.vel)
+    // }
 
     // if (bodyA.vel.x > normal.x && bodyA.vel.y > normal.y) {
     //     const force = bodyB.vel.sub(normal);

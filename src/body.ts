@@ -128,7 +128,7 @@ export class Body {
    * @returns body step velocity
    */
   public get stepVel(): Vector {
-    return this._stepVel;
+    return this._stepVel ?? this.vel;
   }
 
   /**
