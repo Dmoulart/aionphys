@@ -67,7 +67,7 @@ function popBodiesonclick(e, minSize = 50) {
         const body = createBody(
             e.clientX + Math.random() * 50,
             e.clientY + Math.random() * 50,
-            150,
+            50,
             0
         );
         world.bodies.push(body);
