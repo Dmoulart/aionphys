@@ -15,7 +15,8 @@ const BODY_COUNT = 0;
 bodyCounter(BODY_COUNT);
 
 // Add iterations counter
-const ITERATIONS = 4
+// Iterations increase the accuracy of the collision detection and resolution
+const ITERATIONS = 14
 iterationsCounter(ITERATIONS);
 
 // Create bodies
@@ -121,7 +122,7 @@ const bodies = [
 // Create world
 const world = new World({
     bodies,
-    gravity: new Vector(0, 0),
+    gravity: new Vector(0, 2),
     broadphase: new AABBSpatialBroadphase(),
     solver: new ImpulseSolver(),
     iterations: ITERATIONS
