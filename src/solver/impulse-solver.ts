@@ -2,7 +2,8 @@ import { CollisionData, CollisionSolverInterface as SolverInterface, SolverEvent
 import { EventEmitter } from 'aion-events';
 import { Vector } from 'aionsat';
 /**
- * The impulse collision resolver is a simple collision resolver used for study
+ * The impulse collision resolver is a simple collision resolver used for study.
+ * It resolves the velocity by calculating an impulse.
  */
 export class ImpulseSolver extends EventEmitter implements SolverInterface {
   /**
@@ -39,9 +40,6 @@ export class ImpulseSolver extends EventEmitter implements SolverInterface {
     if (bodyB.isDynamic) {
       b.pos = b.pos.sub(mtv);
     }
-
-
-    //const newRelativeVel = 
   }
 
   /**
@@ -54,18 +52,18 @@ export class ImpulseSolver extends EventEmitter implements SolverInterface {
 
     const relativeVelocity = bodyA.vel.sub(bodyB.vel);
 
-    const impulseMagnitude = -(1 + elasticity) * relativeVelocity.dot(normal) / ((-bodyA.mass) + (-bodyB.mass));
+    const impulseMagnitude = -(1 + elasticity) * relativeVelocity.dot(normal) / ((1 / bodyA.mass) + (1 / bodyB.mass));
 
     const impulseDirection = normal
 
     const impulse = impulseDirection.scale(impulseMagnitude);
     console.log(impulse)
     if (bodyA.isDynamic) {
-      bodyA.vel = bodyA.vel.sub(impulse);
+      bodyA.vel = bodyA.vel.add(impulse);
     }
 
     if (bodyB.isDynamic) {
-      bodyB.vel = bodyB.vel.add(impulse);
+      bodyB.vel = bodyB.vel.sub(impulse);
     }
 
   }

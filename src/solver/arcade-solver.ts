@@ -4,6 +4,7 @@ import { Vector } from 'aionsat';
 /**
  * The arcade collision resolver is a simple collision resolver that adjusts the bodies position and velocity depending
  * on the collision's informations.
+ * @warning Do not work well with gravity
  */
 export class ArcadeSolver extends EventEmitter implements SolverInterface {
   /**
@@ -50,33 +51,13 @@ export class ArcadeSolver extends EventEmitter implements SolverInterface {
 
   /**
    * Ajust the velocities of the colliding bodies.
+   * @warning The collisions neutralize each other velocities. Sometimes, when 3 body collides, the gravity is also annihilated by
+   * this collision.
    *
    * @param collision
    */
-  private solveVelocity({ normal, bodyA, bodyB, overlap }: CollisionData): void {
-
+  private solveVelocity({ normal, bodyA, bodyB }: CollisionData): void {
     const opposite = normal.negate();
-
-    // if (bodyA.isDynamic) {
-    //   bodyA.vel = Vector.origin// bodyA.vel.add(normal);
-    // }
-
-    // if (bodyB.isDynamic) {
-    //   bodyB.vel = Vector.origin// bodyB.vel.add(opposite);
-    // }
-
-    // if (bodyA.isDynamic) {
-    //   bodyA.vel = bodyA.stepVel.sub(normal));
-    //   bodyA.vel = bodyA.stepVel.sub(normal.scale(normal.dot(bodyA.stepVel)));
-    // }
-
-    // if (bodyB.isDynamic) {
-    //   bodyB.vel = bodyB.stepVel.sub(normal.scale(normal.dot(bodyB.stepVel)));
-    // }
-
-
-
-    // const opposite = normal.negate();
 
     if (bodyA.isDynamic) {
       const velAdjust = normal.scale(normal.dot(bodyA.stepVel.negate()));
@@ -87,5 +68,6 @@ export class ArcadeSolver extends EventEmitter implements SolverInterface {
       const velAdjust = opposite.scale(normal.dot(bodyB.stepVel));
       bodyB.vel = bodyB.stepVel.add(velAdjust);
     }
+
   }
 }

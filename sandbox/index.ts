@@ -11,11 +11,11 @@ const ctx = canvas.getContext('2d');
 ctx.strokeStyle = 'white';
 
 // Add counter
-const BODY_COUNT = 2;
+const BODY_COUNT = 1;
 bodyCounter(BODY_COUNT);
 
 // Add iterations counter
-const ITERATIONS = 30
+const ITERATIONS = 1
 iterationsCounter(ITERATIONS);
 
 // Create bodies
@@ -29,7 +29,7 @@ const square = new Body({
 const square2 = new Body({
     shape: new Box(100, 100),
     pos: new Vector(300, 200),
-    vel: new Vector(5, 1),
+    vel: new Vector(0, 0),
     data: { name: "other" }
 });
 
