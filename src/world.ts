@@ -233,9 +233,6 @@ export class World extends EventEmitter {
     let currentIteration = 1;
 
     while (currentIteration <= this._ITERATIONS) {
-      // // Update the positions of the bodies in the world.
-      // this.translateBodies();
-
       // Detect pair of bodies which are potentially colliding.
       const pairs = this.broadphase.pair(this.bodies);
 
@@ -251,8 +248,10 @@ export class World extends EventEmitter {
           this.solver.solve({ ...collision, bodyA, bodyB });
         }
       }
+      
       // Update the positions of the bodies in the world.
       this.translateBodies();
+      
       // Update the iteration counter.
       currentIteration++
     }
@@ -325,10 +324,12 @@ export class World extends EventEmitter {
   /**
    * This event listener acts as a bridge between the solver and other event emitters which could be
    * wired to the world to get the collision events.
-   *
-   * @emits {collision:presolve}
-   * @param collision
-   * @return collision data
+   * 
+   * @listen  {solver:PreSolve}
+   * @emits   {collision:PreSolve}
+   * 
+   * @param   collision
+   * @return  collision data
    */
   @On(SolverEvents.PreSolve)
   @Fire(CollisionEvents.PreSolve)
@@ -339,8 +340,10 @@ export class World extends EventEmitter {
   /**
    * This event listener acts as a bridge between the solver and other event emitters which could be
    * wired to the world to get the collision events.
-   *
-   * @emits {collision:postsolve}
+   * 
+   * @listen  {solver:PostSolve}
+   * @emits   {collision:PostSolve}
+   * 
    * @param collision
    * @return collision data
    */

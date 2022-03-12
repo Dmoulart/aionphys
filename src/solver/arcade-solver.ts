@@ -1,5 +1,6 @@
 import { CollisionData, CollisionSolverInterface as SolverInterface, SolverEvents } from './solver';
 import { EventEmitter } from 'aion-events';
+import { Vector } from 'aionsat';
 /**
  * The arcade collision resolver is a simple collision resolver that adjusts the bodies position and velocity depending
  * on the collision's informations.
@@ -52,9 +53,30 @@ export class ArcadeSolver extends EventEmitter implements SolverInterface {
    *
    * @param collision
    */
-  private solveVelocity({ normal, bodyA, bodyB }: CollisionData): void {
+  private solveVelocity({ normal, bodyA, bodyB, overlap }: CollisionData): void {
 
     const opposite = normal.negate();
+
+    // if (bodyA.isDynamic) {
+    //   bodyA.vel = Vector.origin// bodyA.vel.add(normal);
+    // }
+
+    // if (bodyB.isDynamic) {
+    //   bodyB.vel = Vector.origin// bodyB.vel.add(opposite);
+    // }
+
+    // if (bodyA.isDynamic) {
+    //   bodyA.vel = bodyA.stepVel.sub(normal));
+    //   bodyA.vel = bodyA.stepVel.sub(normal.scale(normal.dot(bodyA.stepVel)));
+    // }
+
+    // if (bodyB.isDynamic) {
+    //   bodyB.vel = bodyB.stepVel.sub(normal.scale(normal.dot(bodyB.stepVel)));
+    // }
+
+
+
+    // const opposite = normal.negate();
 
     if (bodyA.isDynamic) {
       const velAdjust = normal.scale(normal.dot(bodyA.stepVel.negate()));

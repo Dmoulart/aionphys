@@ -1,6 +1,6 @@
 import { EventEmitter } from 'aion-events';
 import { Box, Circle, Polygon, Sat, Shape, vec, Vector } from 'aionsat';
-import { Body, CollisionData, CollisionEvents, Time, World, AABBSpatialBroadphase, AABBBruteBroadphase, NaiveBroadphase } from '../dist';
+import { Body, CollisionData, CollisionEvents, Time, World, AABBSpatialBroadphase, AABBBruteBroadphase, NaiveBroadphase, ImpulseSolver, ArcadeSolver } from '../dist';
 
 // Create canvas
 const canvas = document.createElement('canvas');
@@ -127,6 +127,7 @@ const world = new World({
     bodies,
     gravity: new Vector(0, 0.2),
     broadphase: new AABBSpatialBroadphase(),
+    solver: new ImpulseSolver(),
     iterations: ITERATIONS
 });
 
