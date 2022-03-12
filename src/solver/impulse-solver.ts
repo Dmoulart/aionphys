@@ -26,10 +26,10 @@ export class ImpulseSolver extends EventEmitter implements SolverInterface {
     let mtv;
 
     if (bodyA.isDynamic && bodyB.isDynamic) {
-      mtv = normal.scale(overlap / 2 + 0.1);
+      mtv = normal.scale(overlap / 2);
     } else {
       // If one body is static we need to move the other body totally out of the collision.
-      mtv = normal.scale(overlap + 0.1);
+      mtv = normal.scale(overlap);
     }
 
     // Use the minimum translation vector to get the bodies out of contact

@@ -233,6 +233,9 @@ export class World extends EventEmitter {
     let currentIteration = 1;
 
     while (currentIteration <= this._ITERATIONS) {
+      // Update the positions of the bodies in the world.
+      this.translateBodies();
+
       // Detect pair of bodies which are potentially colliding.
       const pairs = this.broadphase.pair(this.bodies);
 
@@ -248,10 +251,7 @@ export class World extends EventEmitter {
           this.solver.solve({ ...collision, bodyA, bodyB });
         }
       }
-      
-      // Update the positions of the bodies in the world.
-      this.translateBodies();
-      
+
       // Update the iteration counter.
       currentIteration++
     }
@@ -276,7 +276,7 @@ export class World extends EventEmitter {
       this.bodies[i].stepVel = this.bodies[i].vel
 
       // Make the body decelerate.
-      this.decelerate(this.bodies[i]);
+      //this.decelerate(this.bodies[i]);
 
       // Update positions of the bodies relative to their velocity.
       this.translate(this.bodies[i]);
@@ -293,7 +293,7 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   private decelerate(body: Body): void {
-    body.vel = body.stepVel
+    body.vel = body.vel
       .scale(this._DECELERATION)
       .div(new Vector(this._ITERATIONS, this._ITERATIONS));
   }
@@ -318,7 +318,7 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   private applyGravity(body: Body): void {
-    body.vel = body.stepVel.add(this._gravity);
+    body.vel = body.vel.add(this._gravity);
   }
 
   /**

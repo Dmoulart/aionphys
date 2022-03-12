@@ -89,7 +89,7 @@ export class Body {
     this.pos = pos ?? new Vector(0, 0);
     this.vel = vel ?? new Vector(0, 0);
     this.mass = mass ?? 1;
-    this._restitution = restitution ?? 0.9;
+    this._restitution = restitution ?? 1;
     this.behavior = behavior ?? BodyBehaviors.Dynamic;
     this.data = data ?? {}
   }

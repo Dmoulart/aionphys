@@ -15,7 +15,7 @@ const BODY_COUNT = 2;
 bodyCounter(BODY_COUNT);
 
 // Add iterations counter
-const ITERATIONS = 3
+const ITERATIONS = 30
 iterationsCounter(ITERATIONS);
 
 // Create bodies
@@ -125,7 +125,7 @@ const bodies = [
 // Create world
 const world = new World({
     bodies,
-    gravity: new Vector(0, 0.2),
+    gravity: new Vector(0, 0),
     broadphase: new AABBSpatialBroadphase(),
     solver: new ImpulseSolver(),
     iterations: ITERATIONS
