@@ -1,7 +1,7 @@
 import { Body } from '../body';
 import { BroadphaseInterface } from './broadphase-interface';
 import { BodyPair } from './body-pair';
-import { World } from '../world';
+import { World, WorldBounds } from '../world';
 import { AABB } from '../math/aabb';
 import { Box } from 'aionsat';
 
@@ -13,8 +13,15 @@ export class AABBSpatialBroadphase implements BroadphaseInterface {
 
   /**
    * A reference to the simulation world.
+   * 
    */
   world!: World;
+
+  /**
+   * The bounding boxes which compose the world's cells.
+   * 
+   */
+  worldPartitions!: Record<string, { aabb: AABB; bodies: Array<Body>; }>;
 
   /**
    * @inheritdoc
@@ -25,42 +32,8 @@ export class AABBSpatialBroadphase implements BroadphaseInterface {
     // Get the world's bounds
     const { bounds } = this.world;
 
-    // Get all world's spatial infos
-    const {
-      topLeft,
-      topCenter,
-      midLeft,
-      halfWidth,
-      halfHeight,
-      center
-    } = bounds;
-
-    const cells: Record<string, { aabb: AABB, bodies: Array<Body> }> = {
-      topLeft: {
-        aabb: AABB.from(
-          new Box(halfWidth, halfHeight, topLeft)
-        ),
-        bodies: []
-      },
-      topRight: {
-        aabb: AABB.from(
-          new Box(halfWidth, halfHeight, topCenter)
-        ),
-        bodies: []
-      },
-      bottomLeft: {
-        aabb: AABB.from(
-          new Box(halfWidth, halfHeight, midLeft)
-        ),
-        bodies: []
-      },
-      bottomRight: {
-        aabb: AABB.from(
-          new Box(halfWidth, halfHeight, center)
-        ),
-        bodies: []
-      }
-    }
+    // Get all world's aabb subdivisions
+    const cells = this.partitionWorld(bounds)
 
     // Divide the bodies into cells
     for (let i = 0; i < bodies.length; i++) {
@@ -100,6 +73,51 @@ export class AABBSpatialBroadphase implements BroadphaseInterface {
     return pairs
   }
 
+
+  /**
+   * Partition the world in 4 different cells from which we'll form collision group.
+   * 
+   * @param bounds world bounds 
+   * @returns world cells division
+   */
+  private partitionWorld({ halfWidth, halfHeight, topLeft, topCenter, midLeft, center }: WorldBounds): Record<string, { aabb: AABB; bodies: Array<Body>; }> {
+    if (!this.worldPartitions) {
+      this.worldPartitions = {
+        topLeft: {
+          aabb: AABB.from(
+            new Box(halfWidth, halfHeight, topLeft)
+          ),
+          bodies: []
+        },
+        topRight: {
+          aabb: AABB.from(
+            new Box(halfWidth, halfHeight, topCenter)
+          ),
+          bodies: []
+        },
+        bottomLeft: {
+          aabb: AABB.from(
+            new Box(halfWidth, halfHeight, midLeft)
+          ),
+          bodies: []
+        },
+        bottomRight: {
+          aabb: AABB.from(
+            new Box(halfWidth, halfHeight, center)
+          ),
+          bodies: []
+        }
+      };
+    }
+
+    // Reinitialize the bodies array
+    for (const zone in this.worldPartitions) {
+      const cell = this.worldPartitions[zone];
+      cell.bodies = [];
+    }
+
+    return this.worldPartitions
+  }
 }
 
 
