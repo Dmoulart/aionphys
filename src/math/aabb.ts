@@ -73,6 +73,34 @@ export class AABB {
     }
 
     /**
+     * Merge two bounding boxes into one.
+     * 
+     * @param other other boundy box
+     * @returns merged bounding box
+     */
+    public union(other: AABB): AABB {
+        const min = new Vector(
+            Math.min(this.min.x, other.min.x),
+            Math.min(this.min.y, other.min.y)
+        )
+        const max = new Vector(
+            Math.max(this.max.x, other.max.x),
+            Math.max(this.max.y, other.max.y)
+        )
+        return new AABB(min, max);
+    }
+
+    /**
+     * Get the area of the bounding box.
+     * 
+     * @return area of the bounding box
+     */
+    public get area(): number {
+        const distance = this.max.sub(this.min);
+        return 2 * (distance.x * distance.y);
+    }
+
+    /**
      * Generate a new axis aligned bounding box from a body.
      * 
      * @param shape 
