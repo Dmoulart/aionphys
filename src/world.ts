@@ -42,10 +42,11 @@ export type WorldOptions = {
   solver?: CollisionSolverInterface;
 
   /**
-   * The gravity constant. Apply at every iteration step.
+   * The gravity constant. Applied at every iteration step.
+   * If a number is provided it will be converted to a vector with the value as y.
    * 
    */
-  gravity?: Vector;
+  gravity?: Vector | number;
 
   /**
    * The deceleration constant. Apply at every iteration step.
@@ -179,7 +180,11 @@ export class World extends EventEmitter {
 
   /**
    * The number of iterations per step. It allows us to control the accuracy of the simulation 
-   * at the cost of performance.
+   * at the cost of performance. 
+   * At every step the whole collision detection and processing will be executed for the given number of iterations. 
+   * By dividing velocities we cut the bodies motions into chunks allowing us
+   * to process the collision with more accuracy. It's get quickly really expansive in term of CPU cost but it's 
+   * also solving number of problems (high velocities detection, body shaking) that I don't know how to solve otherwise
    * 
    */
   private readonly _ITERATIONS!: number
@@ -214,7 +219,11 @@ export class World extends EventEmitter {
     this.solver = solver ?? new ImpulseSolver();
 
     // Physics values
-    this.gravity = gravity ?? Vector.origin;
+    this.gravity = gravity ?
+      typeof gravity === 'number' ?
+        new Vector(0, gravity) :
+        gravity :
+      Vector.origin
 
     // Constants
     this._DECELERATION = deceleration ?? 0.99;

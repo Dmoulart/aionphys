@@ -88,8 +88,8 @@ export class Body {
     this.shape = shape ?? new Circle(10);
     this.pos = pos ?? new Vector(0, 0);
     this.vel = vel ?? new Vector(0, 0);
-    this.mass = mass ?? 0.1;
-    this._restitution = restitution ?? 0;
+    this.mass = mass ?? 0.5;
+    this._restitution = restitution ?? 0.5;
     this.behavior = behavior ?? BodyBehaviors.Dynamic;
     this.data = data ?? {}
   }
