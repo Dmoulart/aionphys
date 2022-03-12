@@ -11,11 +11,11 @@ const ctx = canvas.getContext('2d');
 ctx.strokeStyle = 'white';
 
 // Add counter
-const BODY_COUNT = 1;
+const BODY_COUNT = 0;
 bodyCounter(BODY_COUNT);
 
 // Add iterations counter
-const ITERATIONS = 1
+const ITERATIONS = 4
 iterationsCounter(ITERATIONS);
 
 // Create bodies
@@ -23,14 +23,15 @@ const square = new Body({
     shape: new Box(10, 10),
     pos: new Vector(200, 150),
     vel: new Vector(0, 0),
-    data: { name: "player" }
+    data: { name: "player", color: "red" }
 });
 
 const square2 = new Body({
     shape: new Box(100, 100),
-    pos: new Vector(300, 200),
+    pos: new Vector(400, 400),
     vel: new Vector(0, 0),
-    data: { name: "other" }
+    mass: 0.1,
+    data: { name: "other", color: "blue" }
 });
 
 const square3 = new Body({
@@ -114,7 +115,6 @@ document.body.onkeydown = moveBody(square)
 const bodies = [
     square,
     square2,
-    square3,
     wallLeft,
     wallRight,
     floor,
@@ -125,7 +125,7 @@ const bodies = [
 // Create world
 const world = new World({
     bodies,
-    gravity: new Vector(0, 0),
+    gravity: new Vector(0, 1),
     broadphase: new AABBSpatialBroadphase(),
     solver: new ImpulseSolver(),
     iterations: ITERATIONS
@@ -174,10 +174,10 @@ function createBody(posx: number, posy: number, size: number, vel = 10) {
 
 function draw(body: Body) {
     if (body.shape instanceof Polygon) {
-        drawPolygon(body.shape);
+        drawPolygon(body.shape, body.data.color ?? 'white');
     }
     if (body.shape instanceof Circle) {
-        drawCircle(body.shape);
+        drawCircle(body.shape, body.data.color ?? 'white');
     }
 }
 

@@ -212,7 +212,7 @@ export class World extends EventEmitter {
     this.gravity = gravity ?? Vector.origin;
 
     // Constants
-    this._DECELERATION = deceleration ?? 0.97;
+    this._DECELERATION = deceleration ?? 0;
     this._ITERATIONS = iterations ?? 3;
     this._SIZE = size ?? {
       width: window.innerWidth,
@@ -232,6 +232,8 @@ export class World extends EventEmitter {
     // Initialize the iteration counter.
     let currentIteration = 1;
 
+    // The iterations permits us to divide the movements of body in smaller chunks. This way 
+    // we can treat high velocities collisions with more accuracy.
     while (currentIteration <= this._ITERATIONS) {
       // Update the positions of the bodies in the world.
       this.translateBodies();
@@ -269,33 +271,33 @@ export class World extends EventEmitter {
     const len = this.bodies.length;
 
     for (let i = 0; i < len; i++) {
+      const body = this.bodies[i];
+
       // Static bodies don't move.
-      if (this.bodies[i].isStatic) continue;
+      if (body.isStatic) continue;
 
       // Register the original starting velocity of the body.
-      this.bodies[i].stepVel = this.bodies[i].vel
+      body.stepVel = body.vel
 
       // Make the body decelerate.
-      //this.decelerate(this.bodies[i]);
+      this.decelerate(body);
 
       // Update positions of the bodies relative to their velocity.
-      this.translate(this.bodies[i]);
+      this.translate(body);
 
       // Update bodie's velocities.
-      this.applyGravity(this.bodies[i]);
+      this.applyGravity(body);
     }
   }
 
   /**
-   * Decrease the bodie's velocity using the deceleration coefficient.
+   * Decrease the body's velocity using the deceleration coefficient.
    *
    * @param body
    * @returns nothing
    */
   private decelerate(body: Body): void {
-    body.vel = body.vel
-      .scale(this._DECELERATION)
-      .div(new Vector(this._ITERATIONS, this._ITERATIONS));
+    body.vel = body.vel.scale(this._DECELERATION)
   }
 
   /**
@@ -318,7 +320,7 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   private applyGravity(body: Body): void {
-    body.vel = body.vel.add(this._gravity);
+    body.vel = body.vel.add(this._gravity.div(new Vector(this._ITERATIONS, this._ITERATIONS)));
   }
 
   /**

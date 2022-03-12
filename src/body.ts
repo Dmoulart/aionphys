@@ -63,13 +63,13 @@ export class Body {
   private _behavior!: BodyBehaviors;
 
   /**
-   * The body's mass.
+   * The body's mass. It is advised to use values between 0 and 1.
    */
   private _mass!: number;
 
   /**
- * The body's restitution.
- */
+   * The body's restitution. It is advised to use values between 0 and 1.
+   */
   private _restitution!: number;
 
   /**
@@ -88,8 +88,8 @@ export class Body {
     this.shape = shape ?? new Circle(10);
     this.pos = pos ?? new Vector(0, 0);
     this.vel = vel ?? new Vector(0, 0);
-    this.mass = mass ?? 1;
-    this._restitution = restitution ?? 1;
+    this.mass = mass ?? 0.1;
+    this._restitution = restitution ?? 0;
     this.behavior = behavior ?? BodyBehaviors.Dynamic;
     this.data = data ?? {}
   }
@@ -202,7 +202,7 @@ export class Body {
     return this._mass;
   }
   /**
-   * Set the body's mass.
+   * Set the body's mass. It is advised to set a value between 0 and 1.
    * 
    * @param mass the body mass
    */
@@ -229,7 +229,7 @@ export class Body {
     return this._restitution;
   }
   /**
-   * Set the body's restitution.
+   * Set the body's restitution. It is advised to set a value between 0 and 1.
    * 
    * @param restitution the body restitution
    */
