@@ -43,21 +43,25 @@ export class ImpulseSolver extends EventEmitter implements SolverInterface {
   }
 
   /**
-   * Ajust the velocities of the colliding bodies.
+   * Ajust the velocities of the colliding bodies by calculating and applying an impulse.
    *
    * @param collision
    */
-  private solveVelocity({ normal, bodyA, bodyB, overlap }: CollisionData): void {
+  private solveVelocity({ normal, bodyA, bodyB }: CollisionData): void {
+    // Get the minimum value from the two bodies restitutions.
     const elasticity = Math.min(bodyA.restitution, bodyB.restitution);
 
+    // Calculate the difference in velocity.
     const relativeVelocity = bodyA.vel.sub(bodyB.vel);
 
-    const impulseMagnitude = -(1 + elasticity) * relativeVelocity.dot(normal) / ((1 / bodyA.mass) + (1 / bodyB.mass));
+    // Calculating the impulse length
+    const impulseMagnitude = -(1 + elasticity) * relativeVelocity.dot(normal) / (bodyA.inversedMass + bodyB.inversedMass);
 
+    // Project the impulse along the collision normal
     const impulseDirection = normal
-
     const impulse = impulseDirection.scale(impulseMagnitude);
-    console.log(impulse)
+
+    // Apply the impulse to the bodies
     if (bodyA.isDynamic) {
       bodyA.vel = bodyA.vel.add(impulse);
     }

@@ -210,6 +210,16 @@ export class Body {
     this._mass = mass;
   }
 
+
+  /**
+   * Get the body's inversed mass.
+   * 
+   * @returns body inversed  mass
+   */
+  public get inversedMass(): number {
+    return 1 / this._mass;
+  }
+
   /**
    * Get the body restitution.
    * 
