@@ -3,7 +3,7 @@ import { NaiveBroadphase } from './broadphase';
 import { BroadphaseInterface } from './broadphase/broadphase-interface';
 import { CollisionDetectorInterface } from './detector';
 import { SatDetector } from './detector/sat-detector';
-import { ArcadeSolver, CollisionData, CollisionEvents, CollisionSolverInterface, SolverEvents } from './solver';
+import { ArcadeSolver, CollisionData, CollisionEvents, CollisionSolverInterface, ImpulseSolver, SolverEvents } from './solver';
 import { EventEmitter, Fire, On } from 'aion-events';
 import { emit } from 'process';
 import { Vector } from 'aionsat';
@@ -211,7 +211,7 @@ export class World extends EventEmitter {
     this.broadphase = broadphase ?? new NaiveBroadphase();
     this.broadphase.world = this
     this.detector = detector ?? new SatDetector();
-    this.solver = solver ?? new ArcadeSolver();
+    this.solver = solver ?? new ImpulseSolver();
 
     // Physics values
     this.gravity = gravity ?? Vector.origin;

@@ -16,7 +16,7 @@ bodyCounter(BODY_COUNT);
 
 // Add iterations counter
 // Iterations increase the accuracy of the collision detection and resolution
-const ITERATIONS = 14
+const ITERATIONS = 10
 iterationsCounter(ITERATIONS);
 
 // Create bodies
@@ -62,12 +62,12 @@ const roof = new Body({
     behavior: Body.Behaviors.Static
 });
 
-function popBodiesonclick(e) {
+function popBodiesonclick(e, minSize = 50) {
     for (let i = 0; i < 10; i++) {
         const body = createBody(
             e.clientX + Math.random() * 50,
             e.clientY + Math.random() * 50,
-            50,
+            150,
             0
         );
         world.bodies.push(body);
@@ -78,7 +78,7 @@ function popBodiesonclick(e) {
 }
 
 const moveBody = (body) => (e) => {
-    const speed = 2
+    const speed = 10
     switch (e.key) {
         case 'ArrowLeft':
             square.vel = square.vel.add(new Vector(-speed, 0));
@@ -93,7 +93,7 @@ const moveBody = (body) => (e) => {
             square.vel = square.vel.add(new Vector(0, speed));
             break;
         case ' ':
-            square.vel = square.vel.add(new Vector(0, -20));
+            square.vel = square.vel.add(new Vector(0, -speed * 10));
             break;
         default:
             break;
@@ -158,12 +158,14 @@ function createBodies(n = 1, size = 50) {
 
 function createBody(posx: number, posy: number, size: number, vel = 10) {
     return new Body({
-        shape: Math.random() > 0.5 ? new Box(Math.random() * size, Math.random() * size) : new Circle(Math.random() * size),
+        shape: Math.random() > 0.5 ? new Box(Math.random() * size, Math.random() * size) : new Circle(Math.random() * size / 3),
         pos: new Vector(posx, posy),
         vel: new Vector(
             Math.random() * vel * Math.random() > 0.5 ? -1 : 1,
             Math.random() * vel * Math.random() > 0.5 ? -1 : 1
-        )
+        ),
+        mass: 0.1,
+        restitution: 0
     });
 }
 
