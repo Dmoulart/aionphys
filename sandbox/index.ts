@@ -201,7 +201,6 @@ function drawCircle(circle: Circle, color = 'white') {
 
 function iterationsCounter(iterations: number) {
     let el = document.querySelector('#iterations-count')
-    console.log(el)
     if (!el) {
         createIndicator(`${iterations} iterations`, 5, 15, 'iterations-count')
     }
@@ -212,7 +211,6 @@ function iterationsCounter(iterations: number) {
 
 function bodyCounter(bodyCount: number) {
     let el = document.querySelector('#body-count')
-    console.log(el)
     if (!el) {
         createIndicator(`${bodyCount} bodies`, 5, 5, 'body-count')
     }
@@ -235,7 +233,6 @@ function fpsCounter(fps: number) {
 
 
         let el = document.querySelector('#fps-count')
-        console.log(el)
         if (!el) {
             createIndicator(`${fps} DT`, 5, 1, 'fps-count')
         }
