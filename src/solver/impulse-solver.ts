@@ -22,9 +22,25 @@ export class ImpulseSolver extends EventEmitter implements SolverInterface {
    * @param collision
    */
   private solvePosition({ a, b, normal, overlap, bodyA, bodyB }: CollisionData): void {
-    const relativeVel = bodyA.vel.sub(bodyB.vel);
-    const relativeVelAlongNormal = relativeVel.dot(normal);
-    const coefficientOfRestitution = 0.8;
+    // The minimum translation vector.
+    let mtv;
+
+    if (bodyA.isDynamic && bodyB.isDynamic) {
+      mtv = normal.scale(overlap / 2 + 0.1);
+    } else {
+      // If one body is static we need to move the other body totally out of the collision.
+      mtv = normal.scale(overlap + 0.1);
+    }
+
+    // Use the minimum translation vector to get the bodies out of contact
+    if (bodyA.isDynamic) {
+      a.pos = a.pos.add(mtv);
+    }
+    if (bodyB.isDynamic) {
+      b.pos = b.pos.sub(mtv);
+    }
+
+
     //const newRelativeVel = 
   }
 
@@ -34,6 +50,23 @@ export class ImpulseSolver extends EventEmitter implements SolverInterface {
    * @param collision
    */
   private solveVelocity({ normal, bodyA, bodyB, overlap }: CollisionData): void {
+    const elasticity = Math.min(bodyA.restitution, bodyB.restitution);
+
+    const relativeVelocity = bodyA.vel.sub(bodyB.vel);
+
+    const impulseMagnitude = -(1 + elasticity) * relativeVelocity.dot(normal) / ((-bodyA.mass) + (-bodyB.mass));
+
+    const impulseDirection = normal
+
+    const impulse = impulseDirection.scale(impulseMagnitude);
+    console.log(impulse)
+    if (bodyA.isDynamic) {
+      bodyA.vel = bodyA.vel.sub(impulse);
+    }
+
+    if (bodyB.isDynamic) {
+      bodyB.vel = bodyB.vel.add(impulse);
+    }
 
   }
 }

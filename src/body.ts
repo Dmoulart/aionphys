@@ -15,6 +15,10 @@ export type BodyOptions = {
 
   behavior?: BodyBehaviors;
 
+  mass?: number;
+
+  restitution?: number;
+
   data?: Record<string, any>
 };
 
@@ -59,6 +63,16 @@ export class Body {
   private _behavior!: BodyBehaviors;
 
   /**
+   * The body's mass.
+   */
+  private _mass!: number;
+
+  /**
+ * The body's restitution.
+ */
+  private _restitution!: number;
+
+  /**
    * Data of any form can be attached to the body.
    * It is used for debug purposed.
    */
@@ -70,10 +84,12 @@ export class Body {
    * @param options the body initialization object
    */
   constructor(options: BodyOptions) {
-    const { shape, pos, vel, behavior, data } = options;
+    const { shape, pos, vel, behavior, data, mass, restitution } = options;
     this.shape = shape ?? new Circle(10);
     this.pos = pos ?? new Vector(0, 0);
     this.vel = vel ?? new Vector(0, 0);
+    this.mass = mass ?? 1;
+    this._restitution = restitution ?? 0.9;
     this.behavior = behavior ?? BodyBehaviors.Dynamic;
     this.data = data ?? {}
   }
@@ -175,6 +191,40 @@ export class Body {
    */
   set behavior(behavior: BodyBehaviors) {
     this._behavior = behavior;
+  }
+
+  /**
+   * Get the body's mass.
+   * 
+   * @returns body mass
+   */
+  public get mass(): number {
+    return this._mass;
+  }
+  /**
+   * Set the body's mass.
+   * 
+   * @param mass the body mass
+   */
+  public set mass(mass: number) {
+    this._mass = mass;
+  }
+
+  /**
+   * Get the body restitution.
+   * 
+   * @returns body restitution
+   */
+  public get restitution(): number {
+    return this._restitution;
+  }
+  /**
+   * Set the body's restitution.
+   * 
+   * @param restitution the body restitution
+   */
+  public set restitution(restitution: number) {
+    this._restitution = restitution;
   }
 
   /**
