@@ -81,8 +81,10 @@ export class AABB {
     public static from(shape: Shape): AABB {
         if (shape instanceof Circle) {
             return AABB.fromCircle(shape);
-        } else if (shape instanceof Polygon || shape instanceof Box) {
+        } else if (shape instanceof Polygon) {
             return AABB.fromPolygon(shape);
+        } else if (shape instanceof Box) {
+            return AABB.fromBox(shape);
         }
         throw new Error(
             `Trying to create an axis-aligned-bounding box for a non supported shape type: ${(shape as any).constructor.name}`
@@ -124,6 +126,20 @@ export class AABB {
             max.x = Math.max(max.x, point.x);
             max.y = Math.max(max.y, point.y);
         }
+        return new AABB(min, max);
+    }
+
+    /**
+     * Create a new axis aligned bounding box from a box.
+     * 
+     * @param box 
+     * @returns axis aligned bounding box
+     */
+    static fromBox(box: Box): AABB {
+        const vertices = box.vertices
+        // Get the second and fourth vertex of the box
+        const [, min, , max] = vertices
+
         return new AABB(min, max);
     }
 }

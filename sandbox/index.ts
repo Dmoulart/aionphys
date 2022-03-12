@@ -16,7 +16,7 @@ bodyCounter(BODY_COUNT);
 
 // Add iterations counter
 // Iterations increase the accuracy of the collision detection and resolution
-const ITERATIONS = 20
+const ITERATIONS = 10
 iterationsCounter(ITERATIONS);
 
 // Create bodies
