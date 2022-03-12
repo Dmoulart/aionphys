@@ -27,7 +27,7 @@ export class Time {
    * @returns world's step delta time
    */
   public static get dt(): number {
-    return this._dt / 1000;
+    return this._dt;
   }
 
   /**
@@ -74,7 +74,8 @@ export class Time {
    * @returns god knows what
    */
   public static get scaleFactor() {
+    //return (Time.dt / 1000) * Time.FPS;
     return 1
-    //return Time.dt * Time.FPS;
+
   }
 }

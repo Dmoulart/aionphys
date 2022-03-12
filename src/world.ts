@@ -98,6 +98,11 @@ export type WorldBounds = Size & {
   midLeft: Vector,
 
   /**
+   * The world's mid right point.
+   */
+  midRight: Vector,
+
+  /**
    * The world's top right corner.
    */
   topRight: Vector,
@@ -212,7 +217,7 @@ export class World extends EventEmitter {
     this.gravity = gravity ?? Vector.origin;
 
     // Constants
-    this._DECELERATION = deceleration ?? 0;
+    this._DECELERATION = deceleration ?? 0.99;
     this._ITERATIONS = iterations ?? 3;
     this._SIZE = size ?? {
       width: window.innerWidth,
@@ -308,8 +313,8 @@ export class World extends EventEmitter {
    */
   private translate(body: Body): void {
     const move = body.stepVel
+      .div(new Vector(this._ITERATIONS, this._ITERATIONS))
       .scale(Time.scaleFactor)
-      .div(new Vector(this._ITERATIONS, this._ITERATIONS));
     body.pos = body.pos.add(move);
   }
 
@@ -320,7 +325,10 @@ export class World extends EventEmitter {
    * @returns nothing
    */
   private applyGravity(body: Body): void {
-    body.vel = body.vel.add(this._gravity.div(new Vector(this._ITERATIONS, this._ITERATIONS)));
+    const force = this._gravity
+      .div(new Vector(this._ITERATIONS, this._ITERATIONS))
+      .scale(Time.scaleFactor)
+    body.vel = body.vel.add(force);
   }
 
   /**
@@ -477,6 +485,7 @@ export class World extends EventEmitter {
         bottomCenter: new Vector(this._SIZE.width / 2, this._SIZE.height),
         center: new Vector(this._SIZE.width / 2, this._SIZE.height / 2),
         midLeft: new Vector(0, this._SIZE.height / 2),
+        midRight: new Vector(this._SIZE.width, this._SIZE.height / 2),
       }
     }
 

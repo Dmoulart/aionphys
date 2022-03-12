@@ -67,7 +67,7 @@ export class ImpulseSolver extends EventEmitter implements SolverInterface {
     }
 
     if (bodyB.isDynamic) {
-      bodyB.vel = bodyB.vel.sub(impulse);
+      bodyB.vel = bodyB.vel.add(impulse.negate());
     }
 
   }

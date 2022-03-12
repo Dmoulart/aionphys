@@ -23,22 +23,18 @@ const square = new Body({
     shape: new Box(10, 10),
     pos: new Vector(200, 150),
     vel: new Vector(0, 0),
-    data: { name: "player", color: "red" }
+    data: { name: "player", color: "red" },
+    mass: 0.5,
+    restitution: 0.5,
 });
 
 const square2 = new Body({
     shape: new Box(100, 100),
     pos: new Vector(400, 400),
     vel: new Vector(0, 0),
-    mass: 0.1,
+    mass: 0.5,
+    restitution: 0.5,
     data: { name: "other", color: "blue" }
-});
-
-const square3 = new Body({
-    shape: new Box(100, 100),
-    pos: new Vector(400, 200),
-    vel: new Vector(-5, 0),
-    data: { name: "otherB" }
 });
 
 const floor = new Body({
@@ -125,7 +121,7 @@ const bodies = [
 // Create world
 const world = new World({
     bodies,
-    gravity: new Vector(0, 1),
+    gravity: new Vector(0, 0),
     broadphase: new AABBSpatialBroadphase(),
     solver: new ImpulseSolver(),
     iterations: ITERATIONS
