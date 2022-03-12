@@ -119,7 +119,7 @@ const bodies = [
     wallRight,
     floor,
     roof,
-    // ...createBodies(BODY_COUNT)
+    ...createBodies(BODY_COUNT)
 ];
 
 // Create world
@@ -134,41 +134,6 @@ const world = new World({
 // Listen for collisions
 const eventDispatcher = new EventEmitter();
 eventDispatcher.on(CollisionEvents.PostSolve, ({ bodyA, bodyB, normal, overlap }: CollisionData) => {
-    // if ((bodyA.data.name === 'player'
-    //     || bodyB.data.name === 'player')
-    //     &&
-    //     (bodyB.data.name === 'other'
-    //         || bodyA.data.name === 'other')) {
-    //     console.log('BODY A : ', bodyA.data.name)
-    //     console.log('BODY B : ', bodyB.data.name)
-    //     console.log('overlap', normal)
-    // }
-
-    // if (bodyB.isStatic) {
-
-    // }
-
-    // const opposite = normal.negate()
-
-    // if (bodyA.isDynamic) {
-    //     const velAdjust = normal.scale(normal.dot(bodyA.stepVel.negate()));
-    //     bodyA.vel = bodyA.stepVel.add(velAdjust);
-    // }
-
-
-
-    // if (bodyB.isDynamic) {
-    //     console.log('BODY B OPPOSITE : ', opposite)
-    //     const velAdjust = opposite.scale(normal.dot(bodyB.stepVel));
-
-    //     bodyB.vel = bodyB.stepVel.add(velAdjust);
-    //     console.log('BODY B VEL :', bodyB.vel)
-    // }
-
-    // if (bodyA.vel.x > normal.x && bodyA.vel.y > normal.y) {
-    //     const force = bodyB.vel.sub(normal);
-    //     bodyB.vel = force;
-    // }
 });
 
 world.wire(eventDispatcher);
